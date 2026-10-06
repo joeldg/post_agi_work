@@ -1,0 +1,5 @@
+{"status":"REQUEST_SUCCEEDED","responseTime":50,"message":[],"Results":{"series":[{"seriesID":"JTS510000000000000HIR","data":[
+{"year":"2026","period":"M08","periodName":"August","latest":"true","value":"1.6","footnotes":[{"code":"P","text":"preliminary"}]},
+{"year":"2026","period":"M02","periodName":"February","value":"2.1","footnotes":[{}]},
+{"year":"2025","period":"M13","periodName":"Annual","value":"2.0","footnotes":[{}]},
+{"year":"2025","period":"Q03","periodName":"3rd Quarter","value":"1.9","footnotes":[{}]}]}]}}
