@@ -1,0 +1,15 @@
+{
+ "rule": "wording changed no bump",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    1,
+    "wording"
+   ],
+   "value": "x"
+  }
+ ],
+ "expect": "J1: wording changed since HEAD without a version bump and changelog entry"
+}

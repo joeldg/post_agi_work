@@ -119,6 +119,28 @@ class Base(unittest.TestCase):
         self.assertTrue(any(p.startswith("editions/2026-10-15.json:") and "does not parse" in p for p in problems), problems)
 
 
+class Frozen(unittest.TestCase):
+    def test_version_bump_allows_wording_change(self):
+        ops = [{"file": "claims.json", "set": ["claims", 1, "wording"], "value": "New wording."},
+               {"file": "claims.json", "set": ["version"], "value": "1.1"},
+               {"file": "claims.json", "append": ["changelog"],
+                "value": {"version": "1.1", "date": "2026-10-20", "note": "Reworded J1."}}]
+        self.assertEqual(run_case({"ops": ops}), [])
+
+    def test_new_edition_is_not_frozen(self):
+        doc = json.loads((BASE / "editions/2026-10-15.json").read_text(encoding="utf-8"))
+        doc["date"] = "2026-10-22"
+        doc["window"] = {"from": "2026-10-16", "to": "2026-10-22"}
+        self.assertEqual(run_case({"ops": [{"file": "editions/2026-10-22.json", "write": doc}]}), [])
+
+    def test_history_appended_row_is_allowed(self):
+        row = {"date": "2026-10-22", "from": "emerging", "to": "supported", "why": "Two kinds agree.",
+               "evidence": ["2026-10-22#e1"], "by": "run"}
+        ops = [{"file": "claims.json", "append": ["claims", 3, "history"], "value": row},
+               {"file": "claims.json", "set": ["claims", 3, "status"], "value": "supported"}]
+        self.assertEqual(run_case({"ops": ops}), [])
+
+
 class Cases(unittest.TestCase):
     def test_every_case_fails_with_its_message(self):
         paths = sorted(CASES.glob("*.json"))

@@ -14,8 +14,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from jobslib import (CLAIM_IDS, DATA_KINDS, DEK_MAX_WORDS, EXTREMES, HEADLINE_MAX, KINDS, LENS_OF,  # noqa: E402
-                     MARK_KEYS, QUAL_MAX_WORDS, RATINGS, SERIES_PREFIXES, STATUS, load_json, steps, url_problem,
-                     words)
+                     MARK_KEYS, QUAL_MAX_WORDS, RATINGS, SERIES_PREFIXES, STATUS, git_ls, git_ok, git_show,
+                     load_json, loads_json, steps, url_problem, words)
 
 ROOT = Path(__file__).resolve().parent.parent
 EDITION_NAME = re.compile(r"^(\d{4}-\d{2}-\d{2})\.json$")
@@ -181,6 +181,56 @@ def check_edition(doc: dict, rel: str) -> list[str]:
     return out
 
 
+FROZEN_CLAIM_FIELDS = ("label", "wording", "marks", "indicators")
+FROZEN_TOP_FIELDS = ("lists", "defaultMarks")
+
+
+def check_git(root: Path, rev: str, claims: dict | None) -> list[str]:
+    """Frozen data against git (spec 4.1, 4.2): committed editions, append-only history, and the claims' wording,
+    marks, indicators and lists, which change only with a version bump and a changelog entry."""
+    out = []
+    for rel in git_ls(root, rev, "editions"):
+        if not EDITION_NAME.match(Path(rel).name):
+            continue
+        path = root / rel
+        if not path.exists():
+            out.append(f"{rel}: top: {rel} was removed; committed editions are frozen")
+        elif path.read_text(encoding="utf-8") != git_show(root, rev, rel):
+            out.append(f"{rel}: top: {rel} changed since {rev}; committed editions are frozen")
+    head_text = git_show(root, rev, "claims.json")
+    if head_text is None or not isinstance(claims, dict):
+        return out
+    try:
+        head = loads_json(head_text)
+    except ValueError:
+        return out
+    now_by_id = {c.get("id"): c for c in claims.get("claims") or [] if isinstance(c, dict)}
+    bumped = (claims.get("version") != head.get("version")
+              and len(claims.get("changelog") or []) > len(head.get("changelog") or []))
+    for hc in head.get("claims") or []:
+        cid = hc.get("id")
+        nc = now_by_id.get(cid)
+        if nc is None:
+            continue
+        old, new = hc.get("history") or [], nc.get("history") or []
+        for n, row in enumerate(old, 1):
+            if n > len(new):
+                out.append(f"claims.json: {cid}: history row {n} was removed; history is append-only")
+                break
+            if new[n - 1] != row:
+                out.append(f"claims.json: {cid}: history row {n} changed since {rev}; history is append-only")
+        if not bumped:
+            for field in FROZEN_CLAIM_FIELDS:
+                if nc.get(field) != hc.get(field):
+                    out.append(f"claims.json: {cid}: {field} changed since {rev} without a version bump and "
+                               f"changelog entry")
+    if not bumped:
+        for field in FROZEN_TOP_FIELDS:
+            if claims.get(field) != head.get(field):
+                out.append(f"claims.json: top: {field} changed since {rev} without a version bump and changelog entry")
+    return out
+
+
 def check(root: Path, rev: str = "HEAD") -> list[str]:
     root = Path(root)
     out = []
@@ -199,6 +249,8 @@ def check(root: Path, rev: str = "HEAD") -> list[str]:
             out.append(f"{rel}: top: does not parse ({e})")
             continue
         out += check_edition(doc, rel)
+    if git_ok(root, rev):
+        out += check_git(root, rev, claims)
     return sorted(out)
 
 
@@ -208,6 +260,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rev", default="HEAD", help="git revision the frozen checks compare against")
     a = ap.parse_args(argv)
     problems = check(Path(a.root), a.rev)
+    if not git_ok(Path(a.root), a.rev):
+        print(f"note: no git at {a.rev}; frozen checks skipped")
     for line in problems:
         print(line)
     print("CHECK OK" if not problems else f"CHECK FAILED: {len(problems)} problem(s)")

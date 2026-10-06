@@ -1,0 +1,17 @@
+{
+ "rule": "history edited",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    3,
+    "history",
+    0,
+    "why"
+   ],
+   "value": "x"
+  }
+ ],
+ "expect": "J3: history row 1 changed since HEAD; history is append-only"
+}

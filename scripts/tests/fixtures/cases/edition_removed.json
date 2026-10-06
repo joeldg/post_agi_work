@@ -1,0 +1,10 @@
+{
+ "rule": "edition removed",
+ "ops": [
+  {
+   "file": "editions/2026-10-08.json",
+   "remove": true
+  }
+ ],
+ "expect": "editions/2026-10-08.json was removed; committed editions are frozen"
+}

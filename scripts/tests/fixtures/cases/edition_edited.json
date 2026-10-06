@@ -1,0 +1,13 @@
+{
+ "rule": "edition edited",
+ "ops": [
+  {
+   "file": "editions/2026-10-08.json",
+   "set": [
+    "headline"
+   ],
+   "value": "Changed"
+  }
+ ],
+ "expect": "editions/2026-10-08.json changed since HEAD; committed editions are frozen"
+}

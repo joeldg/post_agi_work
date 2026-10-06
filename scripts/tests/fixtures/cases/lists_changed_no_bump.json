@@ -1,0 +1,17 @@
+{
+ "rule": "lists changed no bump",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "lists",
+    "laborPricedBasket"
+   ],
+   "value": {
+    "version": "1.0",
+    "members": []
+   }
+  }
+ ],
+ "expect": "lists changed since HEAD without a version bump and changelog entry"
+}

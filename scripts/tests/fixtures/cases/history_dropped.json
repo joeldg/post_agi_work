@@ -1,0 +1,15 @@
+{
+ "rule": "history dropped",
+ "ops": [
+  {
+   "file": "claims.json",
+   "del": [
+    "claims",
+    3,
+    "history",
+    1
+   ]
+  }
+ ],
+ "expect": "J3: history row 2 was removed; history is append-only"
+}
