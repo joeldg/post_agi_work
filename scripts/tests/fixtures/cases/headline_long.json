@@ -1,0 +1,13 @@
+{
+ "rule": "headline long",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "headline"
+   ],
+   "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
+ ],
+ "expect": "headline is over 90 characters"
+}

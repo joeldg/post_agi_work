@@ -1,0 +1,15 @@
+{
+ "rule": "history last",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    3,
+    "status"
+   ],
+   "value": "supported"
+  }
+ ],
+ "expect": "last history row's to must equal status"
+}

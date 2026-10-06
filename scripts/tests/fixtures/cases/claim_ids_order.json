@@ -1,0 +1,24 @@
+{
+ "rule": "claim ids order",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    1,
+    "id"
+   ],
+   "value": "J2"
+  },
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    2,
+    "id"
+   ],
+   "value": "J1"
+  }
+ ],
+ "expect": "claims must be J0 to J12 in order"
+}

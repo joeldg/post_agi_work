@@ -1,0 +1,19 @@
+{
+ "rule": "series prefix",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    1,
+    "indicators",
+    0,
+    "series"
+   ],
+   "value": [
+    "yahoo:ACN"
+   ]
+  }
+ ],
+ "expect": "series id must start with fred:, bls:, stooq: or basket:"
+}

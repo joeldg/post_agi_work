@@ -1,0 +1,15 @@
+{
+ "rule": "qual long",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "ratingQual"
+   ],
+   "value": "part of this is our own inference"
+  }
+ ],
+ "expect": "ratingQual is at most 5 words"
+}

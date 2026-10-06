@@ -1,0 +1,15 @@
+{
+ "rule": "url scheme",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "url"
+   ],
+   "value": "ftp://x"
+  }
+ ],
+ "expect": "url must be http(s)"
+}

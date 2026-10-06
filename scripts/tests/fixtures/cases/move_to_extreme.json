@@ -1,0 +1,24 @@
+{
+ "rule": "move to extreme",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "moves",
+    0,
+    "from"
+   ],
+   "value": "supported"
+  },
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "moves",
+    0,
+    "to"
+   ],
+   "value": "established"
+  }
+ ],
+ "expect": "move to established needs by: owner"
+}

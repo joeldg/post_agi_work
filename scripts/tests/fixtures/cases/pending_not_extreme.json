@@ -1,0 +1,16 @@
+{
+ "rule": "pending not extreme",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    4,
+    "pending",
+    "to"
+   ],
+   "value": "emerging"
+  }
+ ],
+ "expect": "pending.to must be established or contradicted"
+}

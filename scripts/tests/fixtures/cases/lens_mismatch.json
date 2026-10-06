@@ -1,0 +1,15 @@
+{
+ "rule": "lens mismatch",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    0,
+    "lens"
+   ],
+   "value": "work"
+  }
+ ],
+ "expect": "lens must be null for J0"
+}

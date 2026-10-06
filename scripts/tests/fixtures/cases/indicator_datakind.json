@@ -1,0 +1,17 @@
+{
+ "rule": "indicator datakind",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    1,
+    "indicators",
+    0,
+    "dataKind"
+   ],
+   "value": "public"
+  }
+ ],
+ "expect": "dataKind must be official or private"
+}

@@ -1,0 +1,17 @@
+{
+ "rule": "evidence dangling",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "moves",
+    0,
+    "evidence"
+   ],
+   "value": [
+    "e9"
+   ]
+  }
+ ],
+ "expect": "evidence id e9 is not defined"
+}

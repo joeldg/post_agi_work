@@ -1,0 +1,15 @@
+{
+ "rule": "status off scale",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    0,
+    "status"
+   ],
+   "value": "likely"
+  }
+ ],
+ "expect": "status must be one of contradicted, no-clear-sign, emerging, supported, established"
+}

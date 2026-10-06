@@ -1,0 +1,17 @@
+{
+ "rule": "history chain",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    3,
+    "history",
+    1,
+    "from"
+   ],
+   "value": "supported"
+  }
+ ],
+ "expect": "history row 2: from must equal the previous row's to"
+}

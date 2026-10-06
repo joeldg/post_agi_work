@@ -1,0 +1,149 @@
+{
+ "schema": 1,
+ "date": "2026-10-08",
+ "claimsVersion": "1.0",
+ "baseline": true,
+ "window": {
+  "from": null,
+  "to": "2026-10-08"
+ },
+ "headline": "Starting statuses for the Jobs tracker",
+ "dek": "Where each claim stands on the evidence to date.",
+ "strip": [
+  {
+   "id": "J0",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J1",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J2",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J3",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J4",
+   "status": "supported",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J5",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J6",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J7",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J8",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J9",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J10",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J11",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  },
+  {
+   "id": "J12",
+   "status": "no-clear-sign",
+   "prev": null,
+   "pending": null
+  }
+ ],
+ "moves": [],
+ "pendingOwner": [],
+ "evidence": [
+  {
+   "id": "e1",
+   "text": "Evidence 1.",
+   "eventDate": "2026-10-12",
+   "background": false,
+   "url": "https://example.org/e1",
+   "otherUrls": [],
+   "via": null,
+   "rating": "verified fact",
+   "ratingQual": null,
+   "ratingNote": null,
+   "kind": "research",
+   "dataKind": "official",
+   "bears": [
+    {
+     "claim": "J4",
+     "direction": "for"
+    }
+   ],
+   "confounder": "The rate cycle.",
+   "top": true
+  },
+  {
+   "id": "e2",
+   "text": "Evidence 2.",
+   "eventDate": "2026-10-12",
+   "background": false,
+   "url": "https://example.org/e2",
+   "otherUrls": [],
+   "via": null,
+   "rating": "our inference",
+   "ratingQual": null,
+   "ratingNote": null,
+   "kind": "research",
+   "dataKind": "official",
+   "bears": [
+    {
+     "claim": "J0",
+     "direction": "for"
+    }
+   ],
+   "confounder": "The rate cycle.",
+   "top": true
+  }
+ ],
+ "nullCase": {
+  "text": "Aggregates look normal.",
+  "evidence": [
+   "e2"
+  ]
+ },
+ "releases": [],
+ "gaps": [],
+ "corrections": []
+}

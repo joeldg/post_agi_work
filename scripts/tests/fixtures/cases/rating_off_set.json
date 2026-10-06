@@ -1,0 +1,15 @@
+{
+ "rule": "rating off set",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "rating"
+   ],
+   "value": "fact"
+  }
+ ],
+ "expect": "rating must be one of the six ratings"
+}

@@ -1,0 +1,13 @@
+{
+ "rule": "dek long",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "dek"
+   ],
+   "value": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+  }
+ ],
+ "expect": "dek is over 60 words"
+}

@@ -1,0 +1,15 @@
+{
+ "rule": "marks missing",
+ "ops": [
+  {
+   "file": "claims.json",
+   "del": [
+    "claims",
+    5,
+    "marks",
+    "supported"
+   ]
+  }
+ ],
+ "expect": "marks need contradicted, emerging, supported and established"
+}

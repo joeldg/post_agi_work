@@ -1,0 +1,15 @@
+{
+ "rule": "evidence id twice",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    1,
+    "id"
+   ],
+   "value": "e1"
+  }
+ ],
+ "expect": "evidence id e1 is used twice"
+}

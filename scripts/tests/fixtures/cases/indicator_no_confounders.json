@@ -1,0 +1,17 @@
+{
+ "rule": "indicator no confounders",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    1,
+    "indicators",
+    0,
+    "confounders"
+   ],
+   "value": []
+  }
+ ],
+ "expect": "indicator needs at least one confounder"
+}

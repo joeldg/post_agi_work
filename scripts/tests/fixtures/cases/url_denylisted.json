@@ -1,0 +1,15 @@
+{
+ "rule": "url denylisted",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "url"
+   ],
+   "value": "https://aiweekly.co/x"
+  }
+ ],
+ "expect": "url is on the denylist (aiweekly.co)"
+}

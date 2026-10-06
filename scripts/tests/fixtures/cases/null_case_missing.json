@@ -1,0 +1,12 @@
+{
+ "rule": "null case missing",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "del": [
+    "nullCase"
+   ]
+  }
+ ],
+ "expect": "nullCase is required"
+}

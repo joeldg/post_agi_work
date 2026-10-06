@@ -1,0 +1,15 @@
+{
+ "rule": "baseline extreme",
+ "ops": [
+  {
+   "file": "editions/2026-10-08.json",
+   "set": [
+    "strip",
+    4,
+    "status"
+   ],
+   "value": "established"
+  }
+ ],
+ "expect": "baseline may not start a claim at established"
+}

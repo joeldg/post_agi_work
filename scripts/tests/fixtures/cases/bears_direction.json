@@ -1,0 +1,17 @@
+{
+ "rule": "bears direction",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "bears",
+    0,
+    "direction"
+   ],
+   "value": "pro"
+  }
+ ],
+ "expect": "bears direction must be for or against"
+}
