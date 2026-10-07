@@ -413,10 +413,34 @@
      ]
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
+   "status": "emerging",
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "emerging",
+     "why": "The Budget Lab at Yale, using CPS data through August 2026, finds the occupational mix not yet changing in ways that clearly align with AI and no clear AI footprint in its synthetic difference-in-differences analysis, which meets J0's Emerging mark: \"one primary source with at least twelve months of post-2022 data finds no differential effect beyond past waves.\" Official aggregates agree: prime-age employment was 80.7% in September 2026, above its January 2020 level; unemployment, 4.2%, is inside its 2015-2019 range; Atlanta Fed wage-growth gaps sit inside their 2015-2019 ranges; and productivity growth since late 2022 lies between the pre-2022 trend and the IT-era pickup. Supported (\"two sources of different kinds agree, across two releases.\") is not met: these sources all rest on the CPS, and J0's own exposure indicator points the other way. St. Louis Fed economists find a 0.47 correlation between AI exposure and rising unemployment across occupations in 2022-2025, and Richmond Fed economists find that job-finding has fallen most for unemployed workers from highly exposed occupations since 2023, a component they call unprecedented outside the spread of personal computers. Contradicted is not met because Richmond places the gap within that precedent. J3 also starts at Emerging; the two fit because the young-worker gap falls on a small group (Dallas Fed economists estimate at most 0.1 point on the unemployment rate), though that estimate does not cover the Richmond job-finding gap or the 12.1% fall in Information payrolls since November 2022.",
+     "evidence": [
+      "2026-10-06#e101",
+      "2026-10-06#e112",
+      "2026-10-06#e114",
+      "2026-10-06#e113",
+      "2026-10-06#e102",
+      "2026-10-06#e107",
+      "2026-10-06#e103",
+      "2026-10-06#e104",
+      "2026-10-06#e105",
+      "2026-10-06#e108",
+      "2026-10-06#e109",
+      "2026-10-06#e110",
+      "2026-10-06#e115",
+      "2026-10-06#e111"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J1",
@@ -521,9 +545,28 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J1 starts at No clear sign: its Emerging mark (\"one primary indicator, either the basket derating against the comparison beyond what its earnings changes explain, or positive market reactions to AI-linked headcount cuts at several named firms within a quarter.\") is not met. Since 2021 the three Nasdaq indexes for labor-priced industries have fallen far behind the broad market and sit below their 2015-2021 ranges against it, and capital flows heavily to AI: 86% of US venture deal value in the first half of 2026, and hyperscaler capex up about 80%. The Emerging tests are still not met. These price-only indexes cannot separate a derating from earnings changes, and 2026 is mixed: the employment-agency and computer-services indexes have roughly kept pace with the market this year. On market reactions to AI-linked cuts we have one clear positive case, Block, whose shares rose more than 20% after hours, against Goldman Sachs research that found share prices fell about 2% on average after layoff announcements.",
+     "evidence": [
+      "2026-10-06#e1",
+      "2026-10-06#e2",
+      "2026-10-06#e3",
+      "2026-10-06#e4",
+      "2026-10-06#e5",
+      "2026-10-06#e6",
+      "2026-10-06#e7",
+      "2026-10-06#e8",
+      "2026-10-06#e9"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J2",
@@ -696,9 +739,36 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J2 starts at No clear sign: its Emerging mark (\"one primary indicator, either repeated named statements from large firms tying cuts to AI with headcount data confirming the cuts, or the exposed industries' JOLTS hires rate falling below the comparison group beyond its pre-2022 range.\") is not met. Firms are naming AI. Block cut its workforce by more than 40%, saying a smaller team using AI tools can do more, and its quarterly report records the cut. Amazon tied its October 2025 round to AI, and Challenger counted 120,136 announced US cuts attributed to AI in January-September 2026. The Emerging mark is not met: Block is the only large firm whose AI-linked cut is confirmed by headcount data, Amazon framed its January round as removing bureaucracy, and the Information hires rate reached the bottom edge of its 2017-2019 range against the comparison industries only in August, after running ahead of them from January to June. AI-washing and the unwinding of 2021-22 over-hiring remain live explanations, and the Yale, New York Fed, OECD and Census studies find no broad AI footprint in hiring.",
+     "evidence": [
+      "2026-10-06#e24",
+      "2026-10-06#e3",
+      "2026-10-06#e25",
+      "2026-10-06#e21",
+      "2026-10-06#e117",
+      "2026-10-06#e22",
+      "2026-10-06#e23",
+      "2026-10-06#e30",
+      "2026-10-06#e26",
+      "2026-10-06#e27",
+      "2026-10-06#e28",
+      "2026-10-06#e29",
+      "2026-10-06#e80",
+      "2026-10-06#e101",
+      "2026-10-06#e102",
+      "2026-10-06#e104",
+      "2026-10-06#e118"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J3",
@@ -885,10 +955,35 @@
      ]
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
+   "status": "emerging",
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "emerging",
+     "why": "J3 meets its Emerging mark (\"one primary dataset shows young workers in exposed jobs falling relative to the comparison group, beyond the pre-2022 range.\"); its Supported mark (\"two independent datasets (payroll research and postings, or the New York Fed series) show it across two releases.\") is not met. In ADP payroll data, Stanford researchers find that employment of 22-25-year-olds in highly AI-exposed occupations was about 19% below the path of their peers in less-exposed occupations as of June 2026, up from 15% a year earlier, with no such gap for experienced workers. They report that the gap holds when tech firms are excluded and exposure to interest rates and remote work is controlled, which covers the claim's named confounders. Supported is not met. Dallas Fed work on Census CPS data points the same way but ends in September 2025, and the New York Fed's recent-graduate unemployment gap sits only at or slightly above its pre-2022 high. Against the claim, New York Fed postings research finds that the decline in exposed occupations began before ChatGPT and is not concentrated in entry-level jobs, a Warwick paper attributes most of the fall in junior hiring to work-from-home exposure, and the Stanford authors say their estimates weaken with education controls and are descriptive, not causal.",
+     "evidence": [
+      "2026-10-06#e32",
+      "2026-10-06#e109",
+      "2026-10-06#e33",
+      "2026-10-06#e110",
+      "2026-10-06#e31",
+      "2026-10-06#e35",
+      "2026-10-06#e36",
+      "2026-10-06#e37",
+      "2026-10-06#e102",
+      "2026-10-06#e105",
+      "2026-10-06#e106",
+      "2026-10-06#e119",
+      "2026-10-06#e27",
+      "2026-10-06#e40",
+      "2026-10-06#e34"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J4",
@@ -1134,10 +1229,44 @@
      "alsoBears": []
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
-   "pending": null,
-   "history": []
+   "status": "supported",
+   "since": "2026-10-06",
+   "pending": {
+    "to": "established",
+    "since": "2026-10-06",
+    "why": "Its Established mark, \"Supported for two quarters in official data, with bottleneck owners' margins rising beyond inflation.\", also appears met: PJM's December 2025 and July 2026 auctions both cleared at their caps, GE Vernova's filings show its gas-turbine backlog and Power margin rising through the first half of 2026, and TSMC's gross margin rose from 52.7% to 67.7%. We propose Established for the owner to confirm. Against it: over the past year the national electricity price rose slightly less than the CPI, the transformer producer price index matched all commodities, MISO's capacity prices fell, and auction rule changes, tariffs and gas prices remain live explanations; the lead-time evidence before the second quarter of 2026 is private (Wood Mackenzie).",
+    "evidence": [
+     "2026-10-06#e61",
+     "2026-10-06#e65",
+     "2026-10-06#e69"
+    ]
+   },
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "supported",
+     "why": "J4 meets its Supported mark (\"prices or auctions and lead times or margins agree across two releases.\"). PJM's 2028/29 capacity auction cleared at its $325 per MW-day cap, after $333.44 for 2027/28 and $329.17 for 2026/27, against $76.53-164.77 in the 2018/19-2021/22 auctions. PJM's independent market monitor attributes 38.2% of the latest capacity charges to data-center load, and residential power prices in five PJM states rose 11-14% over the year to July against 4.9% nationally. Lead times and margins agree across releases: GE Vernova's gas-turbine backlog and reservations rose from 100 to 116 GW, about 5.8 years of output; transformer lead times passed 160 weeks; TSMC's gross margin reached 67.7% against 52.7% in late 2021; and data-center vacancy in primary markets hit a record low of 1.4%. Its Established mark, \"Supported for two quarters in official data, with bottleneck owners' margins rising beyond inflation.\", also appears met: PJM's December 2025 and July 2026 auctions both cleared at their caps, GE Vernova's filings show its gas-turbine backlog and Power margin rising through the first half of 2026, and TSMC's gross margin rose from 52.7% to 67.7%. We propose Established for the owner to confirm. Against it: over the past year the national electricity price rose slightly less than the CPI, the transformer producer price index matched all commodities, MISO's capacity prices fell, and auction rule changes, tariffs and gas prices remain live explanations; the lead-time evidence before the second quarter of 2026 is private (Wood Mackenzie).",
+     "evidence": [
+      "2026-10-06#e61",
+      "2026-10-06#e63",
+      "2026-10-06#e65",
+      "2026-10-06#e66",
+      "2026-10-06#e69",
+      "2026-10-06#e70",
+      "2026-10-06#e68",
+      "2026-10-06#e71",
+      "2026-10-06#e72",
+      "2026-10-06#e73",
+      "2026-10-06#e46",
+      "2026-10-06#e62",
+      "2026-10-06#e64",
+      "2026-10-06#e67",
+      "2026-10-06#e120"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J5",
@@ -1279,9 +1408,37 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J5's Emerging mark asks that \"one official series shows protected work's pay or employment beating the AI-exposed comparison beyond the pre-2022 range.\" Home health employment rose 4.4% in the year to September 2026 while information employment fell 4.2%, and health care and social assistance's share of payrolls is 0.78 points above its 2015-2019 trend while professional and business services is 0.47 points below. We do not count this as beyond the pre-2022 range: our series start in 2015, a window with no ordinary recession; the trend band is the fit's in-sample residual, not a pre-2022 range; and total payrolls grew only 0.3% over the year, so the business cycle can account for much of the gap, alongside an ageing population. Child care employment fell 0.7%, and a level break in April 2025 distorts the home health series. Pay does not show the moat: home health and child-care pay rose 2.4% and 2.5% against 3.1% for all private employees, the home health pay ratio is inside its 2017-2021 range, trades pay is compared with all private workers rather than the exposed industries, and the Atlanta Fed occupation and industry wage gaps sit inside their 2015-2019 ranges. Supported is not met either: Waymo's 500,000-plus paid rides a week are beyond pilot scale.",
+     "evidence": [
+      "2026-10-06#e43",
+      "2026-10-06#e57",
+      "2026-10-06#e41",
+      "2026-10-06#e42",
+      "2026-10-06#e44",
+      "2026-10-06#e114",
+      "2026-10-06#e45",
+      "2026-10-06#e47",
+      "2026-10-06#e48",
+      "2026-10-06#e49",
+      "2026-10-06#e50",
+      "2026-10-06#e51",
+      "2026-10-06#e52",
+      "2026-10-06#e53",
+      "2026-10-06#e95",
+      "2026-10-06#e99",
+      "2026-10-06#e54",
+      "2026-10-06#e46"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J6",
@@ -1375,9 +1532,23 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J6 starts at No clear sign. Its Emerging mark, \"one source shows new AI-era roles growing at that small scale.\", is not met: Upwork's figure is freelance spending on AI-related projects, not roles, and Indeed's AI share counts AI skills in existing postings; neither counts new AI-era roles. New AI-era work is real. Mercor says it pays more than $4 million a day to contractors who train and evaluate models, which we estimate at roughly 4,600-6,800 full-time equivalents. Upwork's AI-related work grew more than 22% while its total volume fell 4%, and 6.7% of Indeed postings mention AI. Still, no source measures new AI-era roles in jobs over time on the same basis as the losses: Mercor's figure is a single snapshot, AI mentions in postings are mostly skills asked of existing roles, and LinkedIn's count of 1.3 million AI-related opportunities worldwide in 2023-2025 points to a larger scale, though it is global and much of it is data annotation, often short contract work.",
+     "evidence": [
+      "2026-10-06#e38",
+      "2026-10-06#e28",
+      "2026-10-06#e39",
+      "2026-10-06#e40"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J7",
@@ -1456,9 +1627,25 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J7 starts at No clear sign: its Emerging mark (\"one enacted measure, or a proposal advancing in a national legislature, explicitly justified by AI's effect on work.\") is not met. Proposals that tie income or public stakes to AI exist, but none has advanced. Sanders's AI sovereign wealth fund bill, Casar's AI tax for a jobs program, and Warner's and Schatz's worker-transition bills were all referred to committee with no further action, and South Korea's presidential office called its policy chief's AI-dividend proposal a personal opinion, and a UK minister's suggestion of a basic income has not led to any measure we found. The one enacted federal response, the Labor Department's $50 million Rapid Reskill grants citing AI, rests on training and work rather than income, and the only unconditional AI payment we found is a small, privately funded pilot. Contradicted is not met because no income measure has been rejected or repealed, and only one jurisdiction has answered with work-linked support.",
+     "evidence": [
+      "2026-10-06#e81",
+      "2026-10-06#e82",
+      "2026-10-06#e83",
+      "2026-10-06#e84",
+      "2026-10-06#e85",
+      "2026-10-06#e86"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J8",
@@ -1592,10 +1779,29 @@
      ]
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
+   "status": "emerging",
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "emerging",
+     "why": "J8 meets its Emerging mark (\"one primary indicator, for example the disclosed AI-revenue-to-capex ratio falling, or a material circular or off-balance-sheet financing disclosed in filings.\"); its Supported mark (\"a widening revenue gap and growing financing structures (or widening spreads) agree across two quarters.\") is not met. Filings disclose material circular and off-balance-sheet financing. Akamai issued Anthropic a warrant on its own stock alongside an $11.6 billion compute commitment. Meta's 10-Q describes moving its El Paso data-center assets to a third party, and a joint venture in which Meta reportedly holds 20% sold $12.3 billion of notes for the campus. Alphabet, Amazon and Meta spent more on property and equipment than their operating cash flow in the first half of 2026 while issuing $148.1 billion of debt, and Oracle's free cash flow is negative while it sells stock. Supported is not met: by our estimate the two leading labs' revenue run-rates rose from about 8% to about 26% of the four largest hyperscalers' trailing capex, so the gap is narrowing in ratio terms, and corporate bond spreads sit inside their 2026 range. Microsoft funds its build from operating cash flow and still buys back stock.",
+     "evidence": [
+      "2026-10-06#e13",
+      "2026-10-06#e12",
+      "2026-10-06#e9",
+      "2026-10-06#e11",
+      "2026-10-06#e14",
+      "2026-10-06#e10",
+      "2026-10-06#e15",
+      "2026-10-06#e16",
+      "2026-10-06#e73"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J9",
@@ -1751,10 +1957,26 @@
      "alsoBears": []
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
+   "status": "emerging",
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "emerging",
+     "why": "The BLS nonfarm labor share (PRS85006173) fell for a fifth straight quarter to 93.4 in the second quarter of 2026, below its 2015-2021 range of 98.9-104.2, which meets J9's Emerging mark: \"one official series moves the claim's way beyond its pre-2022 trend.\" The 2022 step down came before generative AI spread, but the share then held at about 96-98 until early 2025, and three of the five falls came before the 2026 oil shock; we have not examined tariffs or immigration. Compensation fell to 49.9% of gross domestic income and after-tax profits rose to 11.9% of GDP, but these are the same kind of national-accounts measure. Supported is not met: only the top 1%'s share of net worth (32.5%, above its 29.0-30.9% range) has left its pre-2022 range, and it moves with equity prices; the top 1%'s share of equities and the top 10% and bottom 50% shares of net worth sit inside their ranges. Epoch AI's evidence of falling prices per unit of capability and open models about four months behind the frontier counts against Established.",
+     "evidence": [
+      "2026-10-06#e17",
+      "2026-10-06#e18",
+      "2026-10-06#e116",
+      "2026-10-06#e19",
+      "2026-10-06#e69",
+      "2026-10-06#e20"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J10",
@@ -1866,9 +2088,26 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J10 starts at No clear sign. Its Emerging mark, \"one official series breaks from its pre-2022 trend the claim's way.\", is not clearly met. Health care and social assistance's share of payrolls is 0.78 points above its 2015-2019 trend, but the plus-or-minus 0.05-point band is the fit's in-sample residual, not a pre-2022 range, and a fit through 2021 puts it 0.58 points above; health's share of consumer spending is only 0.03 points above its 2015-2019 high, and nominal shares rise with relative prices. The price half moves against the claim: in August 2026 the CPI for miscellaneous personal services rose 4.4% against 2.5% for medical care services, software and accessories prices rose 25.4%, and US law firms' worked rates climbed 7.1%. An ageing population raises care employment whatever AI does, and with AI-exposed service prices rising rather than falling we cannot rule that confounder out. Contradicted is not met because care's share of jobs keeps rising.",
+     "evidence": [
+      "2026-10-06#e57",
+      "2026-10-06#e58",
+      "2026-10-06#e59",
+      "2026-10-06#e43",
+      "2026-10-06#e55",
+      "2026-10-06#e56",
+      "2026-10-06#e60"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J11",
@@ -2031,9 +2270,26 @@
     }
    ],
    "status": "no-clear-sign",
-   "since": null,
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "no-clear-sign",
+     "why": "J11 starts at No clear sign: its Emerging mark (\"one primary indicator, a disclosed volume through agent rails or a measured fall in publisher referrals attributable to AI answers.\") is not met. Google search referrals to Chartbeat's publishers fell 40.2% in the year to July 2026, but the data do not isolate AI answers as the cause. No payment network or AI company has disclosed transaction volumes through agent rails, and OpenAI scaled back in-chat checkout in March. On the business side, Alphabet's Search revenue grew 17%, announced Media job cuts fell 63% from 2025, and Omnicom ties its headcount reduction to its merger, not to agents. Contradicted is not met either, because referral traffic is still falling rather than stabilizing.",
+     "evidence": [
+      "2026-10-06#e74",
+      "2026-10-06#e75",
+      "2026-10-06#e76",
+      "2026-10-06#e77",
+      "2026-10-06#e78",
+      "2026-10-06#e79",
+      "2026-10-06#e80"
+     ],
+     "by": "run"
+    }
+   ]
   },
   {
    "id": "J12",
@@ -2157,10 +2413,38 @@
      "alsoBears": []
     }
    ],
-   "status": "no-clear-sign",
-   "since": null,
+   "status": "emerging",
+   "since": "2026-10-06",
    "pending": null,
-   "history": []
+   "history": [
+    {
+     "date": "2026-10-06",
+     "from": null,
+     "to": "emerging",
+     "why": "J12 meets its Emerging mark: \"one primary indicator, for example an AI exclusion filed in several states, or several data-center denials within a quarter attributed to opposition.\" Local opposition is slowing AI infrastructure. Data Center Watch counted at least 75 US projects worth about $130 billion blocked or delayed by local opposition in January-March 2026 and 45 worth nearly $68 billion in April-June, and New York, Oklahoma City and Pima County adopted moratoriums or pauses. Insurers have filed standard generative-AI liability exclusions that regulators are approving; the only count we found, 2,369 exclusion records in force across 49 states by mid-2026, does not show what share of policies carry them, specialist carriers now offer affirmative AI cover, and the court rulings so far are procedural. Supported (\"two kinds (insurance or liability, and local or labor action) agree across two releases.\") is not met because the brake evidence is mixed: Maine's statewide moratorium was vetoed, contested projects were approved in South Carolina and Georgia, Colorado's AI Act was paused and narrowed under a federally backed challenge, and Hyundai's strike won only a promise of consultation on AI.",
+     "evidence": [
+      "2026-10-06#e87",
+      "2026-10-06#e88",
+      "2026-10-06#e89",
+      "2026-10-06#e91",
+      "2026-10-06#e97",
+      "2026-10-06#e98",
+      "2026-10-06#e99",
+      "2026-10-06#e90",
+      "2026-10-06#e96",
+      "2026-10-06#e92",
+      "2026-10-06#e93",
+      "2026-10-06#e94",
+      "2026-10-06#e95",
+      "2026-10-06#e53",
+      "2026-10-06#e100",
+      "2026-10-06#e61",
+      "2026-10-06#e72",
+      "2026-10-06#e118"
+     ],
+     "by": "run"
+    }
+   ]
   }
  ]
 }
