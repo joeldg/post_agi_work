@@ -119,6 +119,16 @@ class Base(unittest.TestCase):
         self.assertTrue(any(p.startswith("editions/2026-10-15.json:") and "does not parse" in p for p in problems), problems)
 
 
+class PreBaseline(unittest.TestCase):
+    def test_empty_history_passes_before_any_edition(self):
+        doc = json.loads((BASE / "claims.json").read_text(encoding="utf-8"))
+        for c in doc["claims"]:
+            c.update(status="no-clear-sign", since=None, pending=None, history=[])
+        ops = [{"file": "editions/2026-10-08.json", "remove": True}, {"file": "editions/2026-10-15.json", "remove": True},
+               {"file": "claims.json", "write": doc}]
+        self.assertEqual(run_case({"head_ops": ops}), [])
+
+
 class Frozen(unittest.TestCase):
     def test_version_bump_allows_wording_change(self):
         ops = [{"file": "claims.json", "set": ["claims", 1, "wording"], "value": "New wording."},

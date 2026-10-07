@@ -1,0 +1,15 @@
+{
+ "rule": "history empty after baseline",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    5,
+    "history"
+   ],
+   "value": []
+  }
+ ],
+ "expect": "history may be empty only when since is null and no edition exists"
+}

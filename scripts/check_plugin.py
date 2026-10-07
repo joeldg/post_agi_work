@@ -31,7 +31,7 @@ def _series_ok(sid) -> bool:
     return prefix in SERIES_PREFIXES and bool(rest.strip())
 
 
-def check_claims(doc: dict) -> list[str]:
+def check_claims(doc: dict, has_editions: bool = False) -> list[str]:
     out = []
     p = lambda where, rule: out.append(f"claims.json: {where}: {rule}")  # noqa: E731
     if not isinstance(doc, dict):
@@ -76,6 +76,8 @@ def check_claims(doc: dict) -> list[str]:
         if pending is not None and (not isinstance(pending, dict) or pending.get("to") not in EXTREMES):
             p(cid, "pending.to must be established or contradicted")
         hist = c.get("history") or []
+        if not hist and (c.get("since") is not None or has_editions):
+            p(cid, "history may be empty only when since is null and no edition exists")
         for n, row in enumerate(hist, 1):
             if n > 1 and row.get("from") != hist[n - 2].get("to"):
                 p(cid, f"history row {n}: from must equal the previous row's to")
@@ -239,9 +241,10 @@ def check(root: Path, rev: str = "HEAD") -> list[str]:
         claims = load_json(root / "claims.json")
     except (OSError, ValueError) as e:
         out.append(f"claims.json: top: does not parse ({e})")
+    editions = sorted((root / "editions").glob("*.json"))
     if claims is not None:
-        out += check_claims(claims)
-    for path in sorted((root / "editions").glob("*.json")):
+        out += check_claims(claims, has_editions=bool(editions))
+    for path in editions:
         rel = f"editions/{path.name}"
         try:
             doc = load_json(path)
