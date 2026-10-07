@@ -1229,18 +1229,9 @@
      "alsoBears": []
     }
    ],
-   "status": "supported",
+   "status": "established",
    "since": "2026-10-06",
-   "pending": {
-    "to": "established",
-    "since": "2026-10-06",
-    "why": "Its Established mark, \"Supported for two quarters in official data, with bottleneck owners' margins rising beyond inflation.\", also appears met: PJM's December 2025 and July 2026 auctions both cleared at their caps, GE Vernova's filings show its gas-turbine backlog and Power margin rising through the first half of 2026, and TSMC's gross margin rose from 52.7% to 67.7%. We propose Established for the owner to confirm. Against it: over the past year the national electricity price rose slightly less than the CPI, the transformer producer price index matched all commodities, MISO's capacity prices fell, and auction rule changes, tariffs and gas prices remain live explanations; the lead-time evidence before the second quarter of 2026 is private (Wood Mackenzie).",
-    "evidence": [
-     "2026-10-06#e61",
-     "2026-10-06#e65",
-     "2026-10-06#e69"
-    ]
-   },
+   "pending": null,
    "history": [
     {
      "date": "2026-10-06",
@@ -1265,6 +1256,18 @@
       "2026-10-06#e120"
      ],
      "by": "run"
+    },
+    {
+     "date": "2026-10-06",
+     "from": "supported",
+     "to": "established",
+     "why": "Its Established mark, \"Supported for two quarters in official data, with bottleneck owners' margins rising beyond inflation.\", also appears met: PJM's December 2025 and July 2026 auctions both cleared at their caps, GE Vernova's filings show its gas-turbine backlog and Power margin rising through the first half of 2026, and TSMC's gross margin rose from 52.7% to 67.7%. We propose Established for the owner to confirm. Against it: over the past year the national electricity price rose slightly less than the CPI, the transformer producer price index matched all commodities, MISO's capacity prices fell, and auction rule changes, tariffs and gas prices remain live explanations; the lead-time evidence before the second quarter of 2026 is private (Wood Mackenzie).",
+     "evidence": [
+      "2026-10-06#e61",
+      "2026-10-06#e65",
+      "2026-10-06#e69"
+     ],
+     "by": "owner"
     }
    ]
   },
