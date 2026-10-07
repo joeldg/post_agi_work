@@ -1,5 +1,5 @@
 {
- "rule": "history working notes",
+ "rule": "two run rows same date",
  "ops": [
   {
    "file": "claims.json",
@@ -9,10 +9,10 @@
     "history"
    ],
    "value": {
-    "date": "2026-10-22",
+    "date": "2026-10-15",
     "from": "emerging",
     "to": "supported",
-    "why": "Payroll research agrees. The refuter found: I opened the page and pendingHolds is false.",
+    "why": "Again.",
     "evidence": [],
     "by": "run"
    }
@@ -27,5 +27,5 @@
    "value": "supported"
   }
  ],
- "expect": "history row 3: why reads like working notes"
+ "expect": "J3: more than one run row dated 2026-10-15"
 }

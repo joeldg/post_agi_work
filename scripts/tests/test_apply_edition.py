@@ -13,6 +13,7 @@ sys.path.insert(0, str(HERE.parent))
 
 import apply_edition  # noqa: E402
 import check_plugin  # noqa: E402
+import jobslib  # noqa: E402
 from scripts.tests.test_check_plugin import BASE, make_repo  # noqa: E402
 
 
@@ -67,20 +68,55 @@ class Apply(unittest.TestCase):
         apply_edition.apply(self.root, payload())
         p = payload()
         p["edition"]["headline"] = "Second try"
-        p["claims"] = []
         self.assertEqual(apply_edition.apply(self.root, p), [])
         ed = json.loads((self.root / "editions/2026-10-22.json").read_text(encoding="utf-8"))
         self.assertEqual(ed["headline"], "Second try")
 
-    def test_main_exit_codes(self):
+    def test_rerun_does_not_stack_a_second_step(self):
+        # The 2026-10-06 review's I2: a second attempt read the first attempt's claims.json and moved J5 again.
+        apply_edition.apply(self.root, payload())
+        self.assertEqual(apply_edition.apply(self.root, payload()), [])
+        claims = json.loads((self.root / "claims.json").read_text(encoding="utf-8"))
+        rows = [h for h in claims["claims"][5]["history"] if h["date"] == "2026-10-22"]
+        self.assertEqual(len(rows), 1)
+
+    def signed(self, pl):
+        pl["checksum"] = jobslib.payload_checksum({"edition": pl["edition"], "claims": pl["claims"]})
+        return pl
+
+    def test_main_refuses_a_payload_changed_in_transit(self):
+        # The 2026-10-06 review's I9: an agent retypes the payload, so a changed word must be caught.
+        pl = self.signed(payload())
+        pl["edition"]["evidence"][0]["text"] = pl["edition"]["evidence"][0]["text"].replace("1", "2", 1) + " "
+        path = self.root / "payload.json"
+        path.write_text(json.dumps(pl), encoding="utf-8")
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(apply_edition.main([str(path), "--root", str(self.root)]), 2)
+        self.assertIn("checksum", out.getvalue())
+        self.assertFalse((self.root / "editions/2026-10-22.json").exists())
+
+    def test_main_refuses_an_unsigned_payload(self):
         path = self.root / "payload.json"
         path.write_text(json.dumps(payload()), encoding="utf-8")
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(apply_edition.main([str(path), "--root", str(self.root)]), 2)
+        self.assertIn("checksum", out.getvalue())
+
+    def test_checksum_ignores_key_order_but_not_values(self):
+        a = {"edition": {"x": 1.5, "y": ["a", "b"]}, "claims": []}
+        b = {"claims": [], "edition": {"y": ["a", "b"], "x": 1.5}}
+        self.assertEqual(jobslib.payload_checksum(a), jobslib.payload_checksum(b))
+        self.assertNotEqual(jobslib.payload_checksum(a), jobslib.payload_checksum({"edition": {"x": 1.5, "y": ["a", "c"]}, "claims": []}))
+
+    def test_main_exit_codes(self):
+        path = self.root / "payload.json"
+        path.write_text(json.dumps(self.signed(payload())), encoding="utf-8")
         with contextlib.redirect_stdout(io.StringIO()) as out:
             self.assertEqual(apply_edition.main([str(path), "--root", str(self.root)]), 0)
         self.assertIn("CHECK OK", out.getvalue())
         bad = payload("2026-10-29")
         bad["edition"]["strip"] = bad["edition"]["strip"][:12]
-        path.write_text(json.dumps(bad), encoding="utf-8")
+        path.write_text(json.dumps(self.signed(bad)), encoding="utf-8")
         with contextlib.redirect_stdout(io.StringIO()) as out:
             self.assertEqual(apply_edition.main([str(path), "--root", str(self.root)]), 1)
         self.assertIn("strip must list J0 to J12 in order", out.getvalue())

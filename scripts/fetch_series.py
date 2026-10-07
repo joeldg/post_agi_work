@@ -6,7 +6,9 @@ Writes series/<prefix>__<id>.json for every series id in claims.json and series/
 revised since the files on disk). Sources, all keyless:
   fred:<ID>  FRED's CSV download, https://fred.stlouisfed.org/graph/fredgraph.csv?id=<ID>
   bls:<ID>   the BLS public API v1 (no key; at most 10 years a request, 25 requests a day)
-A series that fails keeps its last good observations and is marked "stale"; the run carries on and exits 0.
+A series that fails, or answers with no observations, keeps its last good observations and is marked "stale"; the
+run carries on and exits 0. Observations older than the fetched window are kept, so BLS's 10-year limit never erases
+the pre-2022 range.
 stooq: and basket: ids are valid in claims.json but have no keyless source in v1 (Stooq now answers with a
 browser challenge), so they read as stale. A malformed id exits 2.
 """
@@ -153,7 +155,12 @@ def run(root: Path, get=http_get, now: str | None = None) -> dict:
         old = _old(path) or {}
         old_obs = old.get("observations") or []
         try:
-            obs = fetch_one(sid, get, int(now[:4]))
+            got = fetch_one(sid, get, int(now[:4]))
+            if not got:  # a well-formed but empty answer is a failure, never data (the 2026-10-06 review's I7)
+                raise FetchError(f"{sid}: the answer holds no observations")
+            # Keep what the publisher no longer sends: BLS answers only the last 10 years, and the marks are measured
+            # against the pre-2022 range (I6). The fetched window is authoritative from its first date on.
+            obs = [o for o in old_obs if o[0] < got[0][0]] + got
             doc = {"id": sid, "url": _url(sid), "fetched": now, "status": "ok", "error": None, "observations": obs}
             summary["ok"].append(sid)
         except (FetchError, OSError, ValueError) as e:

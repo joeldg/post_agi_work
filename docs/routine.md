@@ -23,14 +23,14 @@ This routine never touches the newsletter repo (`agi_assessment`). The Friday wr
 
 Run `Workflow({scriptPath: "/Users/joeldg/Projects/post_agi_work/.claude/workflows/jobs-weekly.js", args: {date: DATE}})`, with `args` as an object, never a JSON-encoded string. It researches, verifies, decides, writes `editions/<DATE>.json` and the allowed `claims.json` fields, and reviews; it never commits. Read its result: `ready`, `headline`, `moves`, `pendingOwner`, `gaps`, `fallbacks`, `review`, `check`.
 
-If it throws, or returns `ready: false` and the problems are not few and clear enough to fix by hand under the spec's rules, restore and report.
+If it throws, or returns `ready: false`, restore and report its `reason`. Never hand-edit an edition to make it ready: `ready: false` means no reviewer saw it, or the review's fixes did not pass the check, and only a rerun of the workflow may produce the edition.
 
 ## 3. Validate
 
+- **First, rule out tampering.** Run `git status --porcelain`. If anything under `scripts/` or `.claude/workflows/` changed, restore it now (`git checkout -- scripts .claude/workflows`, and remove any untracked file this run created there), before running the checker or the tests, so a changed checker can never pass its own run. Then continue only if what remains changed is `editions/<DATE>.json`, `claims.json` and files under `series/`.
 - `python3 scripts/check_plugin.py` must print `CHECK OK`.
 - `python3 -m unittest discover -s scripts/tests -t .` must pass.
 - Read `editions/<DATE>.json`: thirteen strip entries, a null case, a headline of at most 90 characters, no move of more than one step, no applied move to Established or Contradicted.
-- `git status --porcelain` lists only `editions/<DATE>.json`, `claims.json` and files under `series/`. Anything else this run changed is undone.
 
 ## 4. Commit and push
 
@@ -55,4 +55,4 @@ At the top: any STOPPED, skipped, restored or failed state. Then the headline, e
 
 ## Restoring
 
-Whenever this routine stops after step 1 without committing, and at the latest at **06:00 PT Friday** for anything still uncommitted: `git checkout -- claims.json series`, then `git clean -f -- editions/<DATE>.json series` (only files this run created), so the next run starts clean. Say "restored" at the top of the final output and in a push notification. There is then no edition this week, and the Friday wrap-up goes out without Jobs.
+Whenever this routine stops after step 1 without committing, and at the latest at **06:00 PT Friday** for anything still uncommitted: `git checkout -- claims.json series scripts .claude/workflows`, then `git clean -f -- editions/<DATE>.json series scripts .claude/workflows` (only files this run created), so the next run starts clean. Say "restored" at the top of the final output and in a push notification. There is then no edition this week, and the Friday wrap-up goes out without Jobs.

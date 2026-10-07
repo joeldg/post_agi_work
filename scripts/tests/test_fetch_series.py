@@ -126,6 +126,33 @@ class Run(unittest.TestCase):
             self.assertEqual(rel["new"], [["2026-09-01", 1.2]])
             self.assertEqual(rel["revised"], [["2026-08-01", 1.0, 1.1]])
 
+    def test_window_keeps_older_observations(self):
+        # The 2026-10-06 review's I6: BLS answers only the last 10 years, so each pull would drop the oldest year
+        # and, by 2031, every pre-2022 value the marks are measured against.
+        old = {"bls:JTS510000000000000HIR": [["2015-01", 3.0], ["2016-01", 3.1], ["2026-07", 9.9]]}
+        with Root(["bls:JTS510000000000000HIR"], old) as root:
+            fetch_series.run(root, fake_get({"api.bls.gov": body("bls_ok.json")}), NOW)
+            obs = read(root, "bls:JTS510000000000000HIR")["observations"]
+            self.assertEqual(obs, [["2015-01", 3.0], ["2016-01", 3.1], ["2025-Q3", 1.9], ["2026-02", 2.1], ["2026-08", 1.6]])
+
+    def test_empty_bls_answer_is_stale(self):
+        # I7: "Series does not exist" comes back as REQUEST_SUCCEEDED with no data, and must not wipe the file.
+        empty = '{"status":"REQUEST_SUCCEEDED","message":["Series does not exist for Series X"],"Results":{"series":[{"seriesID":"X","data":[]}]}}'
+        with Root(["bls:X"], {"bls:X": [["2026-07", 1.0]]}) as root:
+            summary = fetch_series.run(root, fake_get({"api.bls.gov": empty}), NOW)
+            self.assertEqual(summary["stale"], ["bls:X"])
+            self.assertEqual(read(root, "bls:X")["observations"], [["2026-07", 1.0]])
+
+    def test_header_only_fred_answer_is_stale(self):
+        with Root(["fred:X"], {"fred:X": [["2026-07-01", 1.0]]}) as root:
+            summary = fetch_series.run(root, fake_get({"fredgraph": "observation_date,X\n"}), NOW)
+            self.assertEqual(summary["stale"], ["fred:X"])
+
+    def test_bls_refusal_keeps_last_good(self):
+        with Root(["bls:X"], {"bls:X": [["2026-07", 1.0]]}) as root:
+            fetch_series.run(root, fake_get({"api.bls.gov": body("bls_refused.json")}), NOW)
+            self.assertEqual(read(root, "bls:X")["observations"], [["2026-07", 1.0]])
+
     def test_malformed_id_exits_2(self):
         with Root(["fred"]) as root:
             with contextlib.redirect_stderr(io.StringIO()) as err:

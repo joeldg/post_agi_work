@@ -1,0 +1,41 @@
+{
+ "rule": "pending equals status",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    4,
+    "pending",
+    "to"
+   ],
+   "value": "established"
+  },
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    4,
+    "status"
+   ],
+   "value": "established"
+  },
+  {
+   "file": "claims.json",
+   "append": [
+    "claims",
+    4,
+    "history"
+   ],
+   "value": {
+    "date": "2026-10-20",
+    "from": "supported",
+    "to": "established",
+    "why": "Owner agreed.",
+    "evidence": [],
+    "by": "owner"
+   }
+  }
+ ],
+ "expect": "pending.to must differ from status"
+}

@@ -138,10 +138,17 @@ class Frozen(unittest.TestCase):
         self.assertEqual(run_case({"ops": ops}), [])
 
     def test_new_edition_is_not_frozen(self):
-        doc = json.loads((BASE / "editions/2026-10-15.json").read_text(encoding="utf-8"))
-        doc["date"] = "2026-10-22"
-        doc["window"] = {"from": "2026-10-16", "to": "2026-10-22"}
+        doc = json.loads((FIX / "fresh_2026-10-22.json").read_text(encoding="utf-8"))
         self.assertEqual(run_case({"ops": [{"file": "editions/2026-10-22.json", "write": doc}]}), [])
+
+    def test_committed_edition_is_not_held_to_todays_claims(self):
+        # claims.json may move on after an edition is committed (the owner's confirmations): only an uncommitted
+        # edition must agree with it.
+        ops = [{"file": "claims.json", "set": ["claims", 4, "status"], "value": "established"},
+               {"file": "claims.json", "set": ["claims", 4, "pending"], "value": None},
+               {"file": "claims.json", "append": ["claims", 4, "history"], "value": {"date": "2026-10-16", "from": "supported",
+                "to": "established", "why": "Owner agreed.", "evidence": [], "by": "owner"}}]
+        self.assertEqual(run_case({"ops": ops}), [])
 
     def test_history_appended_row_is_allowed(self):
         row = {"date": "2026-10-22", "from": "emerging", "to": "supported", "why": "Two kinds agree.",
@@ -149,6 +156,22 @@ class Frozen(unittest.TestCase):
         ops = [{"file": "claims.json", "append": ["claims", 3, "history"], "value": row},
                {"file": "claims.json", "set": ["claims", 3, "status"], "value": "supported"}]
         self.assertEqual(run_case({"ops": ops}), [])
+
+
+class FrozenContent(unittest.TestCase):
+    # The 2026-10-06 review's I8: a content rule added later (a new denylisted domain, a tighter pattern) must not fail
+    # data that was committed before it, which can never be edited; it applies to new or changed data only.
+    def test_committed_edition_is_not_held_to_a_later_text_rule(self):
+        head_ops = [{"file": "editions/2026-10-15.json", "set": ["evidence", 0, "text"], "value": "Replace the figure with 2.1%."}]
+        self.assertEqual(run_case({"head_ops": head_ops}), [])
+
+    def test_committed_edition_is_not_held_to_a_later_denylist(self):
+        head_ops = [{"file": "editions/2026-10-15.json", "set": ["evidence", 0, "url"], "value": "https://aiweekly.co/x"}]
+        self.assertEqual(run_case({"head_ops": head_ops}), [])
+
+    def test_committed_history_row_is_not_held_to_a_later_notes_rule(self):
+        head_ops = [{"file": "claims.json", "set": ["claims", 3, "history", 0, "why"], "value": "I opened the page."}]
+        self.assertEqual(run_case({"head_ops": head_ops}), [])
 
 
 class Cases(unittest.TestCase):

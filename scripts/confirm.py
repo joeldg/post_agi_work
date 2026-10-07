@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_plugin  # noqa: E402
 from jobslib import CLAIM_IDS, EXTREMES, dump_json, load_json  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,7 +32,9 @@ def apply(doc: dict, claim: str, to: str | None, reject: bool, today: str) -> tu
     if not reject and to not in EXTREMES:
         raise ValueError("--to must be established or contradicted")
     doc = copy.deepcopy(doc)
-    c = next(x for x in doc["claims"] if x.get("id") == claim)
+    c = next((x for x in doc.get("claims") or [] if x.get("id") == claim), None)
+    if c is None:
+        raise ValueError(f"{claim} is not in claims.json")
     pending = c.get("pending")
     if not pending:
         raise ValueError(f"{claim} has no pending move")
@@ -69,14 +72,33 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     root = Path(a.root)
     path = root / "claims.json"
+    git = lambda *args: subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)  # noqa: E731
+    # Only the owner's decision goes into this commit: never a failed run's leftovers or anything else staged
+    # (the 2026-10-06 review's I1).
+    if git("diff", "--quiet", "HEAD", "--", "claims.json").returncode != 0:
+        print("confirm: claims.json has uncommitted changes; restore it (git checkout -- claims.json) or let the "
+              "Thursday run finish first", file=sys.stderr)
+        return 2
+    if git("diff", "--cached", "--quiet").returncode != 0:
+        print("confirm: there are staged changes; unstage them first (git reset)", file=sys.stderr)
+        return 2
     try:
         doc, msg = apply(load_json(path), a.claim, a.to, a.reject, a.today or pacific_today())
     except (OSError, ValueError) as e:
         print(f"confirm: {e}", file=sys.stderr)
         return 2
+    original = path.read_text(encoding="utf-8")
     path.write_text(dump_json(doc), encoding="utf-8")
-    subprocess.run(["git", "-C", str(root), "add", "claims.json"], check=True)
-    subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", msg], check=True)
+    problems = check_plugin.check(root)
+    if problems:
+        path.write_text(original, encoding="utf-8")
+        print("confirm: the result fails check_plugin, so nothing was written:\n" + "\n".join(problems), file=sys.stderr)
+        return 2
+    done = git("commit", "-q", "-m", msg, "--", "claims.json")
+    if done.returncode != 0:
+        path.write_text(original, encoding="utf-8")
+        print(f"confirm: git commit failed: {done.stderr.strip()}", file=sys.stderr)
+        return 2
     print(msg)
     return 0
 

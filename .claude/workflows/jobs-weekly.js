@@ -332,10 +332,21 @@ const items = []
 const dropped = []
 const blocked = []
 const gaps = []
+// A lens whose research or verification failed holds all its claims at their current status (the 2026-10-06 review
+// found a failed lens published as "lens ?" while the decision moved its claims on no evidence).
+const HELD = {}
+const failedLenses = []
+lensResults.forEach((r, i) => {
+  const l = LENSES[i]
+  if (!r || !r.found || !r.verdict) {
+    failedLenses.push(l.title)
+    l.claims.forEach(c => { HELD[c] = l.title })
+    gaps.push('The ' + l.title + ' lens failed this week, so ' + l.claims.join(', ') + ' hold their status and their evidence is not in this edition.')
+  }
+})
 for (const r of lensResults) {
-  if (!r || !r.found) { gaps.push('lens ' + (r && r.lens ? r.lens.key : '?') + ': research failed'); continue }
+  if (!r || !r.found || !r.verdict) continue
   ;(r.found.blocked || []).forEach(b => blocked.push(r.lens.key + ': ' + b))
-  if (!r.verdict) { gaps.push('lens ' + r.lens.key + ': verifier failed, its items are dropped'); continue }
   const byId = {}
   ;(r.verdict.results || []).forEach(x => { byId[x.id] = x })
   const ref = {}
@@ -386,6 +397,7 @@ const decision = await runAgent([
   GROUND, '', EVIDENCE, '', MARKS, '',
   'You are the DECISION stage. Read claims.json in full (every claim\'s wording, marks, indicators and history)' + (st.prev ? ', the previous edition editions/' + st.prev.date + '.json' : '') + ', series/releases.json and the series/ files. Then decide, for EACH of the thirteen claims, its status for ' + DATE + ' under its own marks, using only the verified items below, the series and the claim\'s history.',
   STATE_NOTE,
+  Object.keys(HELD).length ? 'HELD: the lens covering ' + Object.keys(HELD).join(', ') + ' failed this week; give each its current status (No clear sign at a baseline) with the why "Its lens failed this week, so it holds its status."' : '',
   Object.keys(RAN).length < 13 ? 'REHEARSAL: no lens ran for ' + ['J0', 'J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10', 'J11', 'J12'].filter(c => !RAN[c]).join(', ') + '; give those claims their current status (No clear sign at a baseline) with the why "No lens ran for this claim in this rehearsal."' : '',
   '',
   'For each claim return: status (' + (BASELINE ? 'its starting status' : 'its current status, or one step from it') + '), pendingTo ("established" or "contradicted" when the evidence meets an extreme the owner must confirm, else "none"), mark (quote the mark text from claims.json you applied), why (three to five plain sentences in the "we" voice: quote, in quotation marks, the mark for the status you set and the mark for the next status up that is not met; then what the evidence shows, which indicators agree, and the confounders and why they do or do not explain it), and evidence (the item ids, e.g. ["e3", "e7"]; may be empty only for No clear sign).',
@@ -416,6 +428,11 @@ for (const c of st.claims) {
     status = stepToward(cur, status)
   }
   if (pendingTo && Math.abs(rank(pendingTo) - rank(status)) !== 1) pendingTo = null   // an extreme is pending only from its neighbour
+  if (HELD[c.id] || !RAN[c.id]) {                             // a failed or skipped lens: the claim holds
+    proposals.push({ id: c.id, label: c.label, current: BASELINE ? null : c.status, status: cur, pendingTo: null, mark: '',
+      why: HELD[c.id] ? 'The ' + HELD[c.id] + ' lens failed this week, so ' + c.id + ' holds its status.' : 'No lens ran for ' + c.id + ' in this rehearsal, so it holds its status.', evidence: [] })
+    continue
+  }
   const evidence = (d.evidence || []).filter(e => itemIds[e])
   proposals.push({ id: c.id, label: c.label, current: BASELINE ? null : c.status, status: status, pendingTo: pendingTo, mark: d.mark || '', why: d.why || '', evidence: evidence })
 }
@@ -506,6 +523,16 @@ if (changed.length) {
     'FIRST DRAFT, to correct: ' + JSON.stringify({ headline: decision.headline, dek: decision.dek }),
   ].join('\n'), { label: 'headline', phase: 'Decide', schema: { type: 'object', properties: { headline: S, dek: S }, required: ['headline', 'dek'] } })
   if (copy && copy.headline) { headline = copy.headline; dek = copy.dek || dek }
+  else {                                                       // never keep a headline the final statuses contradict
+    const moved = proposals.filter(p => !BASELINE && p.status !== p.current)
+    headline = BASELINE ? 'Baseline: starting statuses for the thirteen claims'
+      : (moved.length ? 'Jobs: ' + moved.map(p => p.id).join(', ') + ' moved this week' : 'Jobs: no claim moved this week')
+    const groups = {}
+    proposals.forEach(p => { (groups[p.status] = groups[p.status] || []).push(p.id) })
+    dek = STATUS.slice().reverse().filter(k => groups[k]).map(k => k.replace(/-/g, ' ') + ': ' + groups[k].join(', ')).join('; ') + '.'
+    dek = dek.charAt(0).toUpperCase() + dek.slice(1)
+    textNotes.push('the headline rewrite failed; a plain headline and dek were built in code')
+  }
 }
 const readerGaps = gaps.slice()
 if (blocked.length) readerGaps.push(blocked.length + ' sources could not be opened (paywalls, or sites that block automated access); items rest on other copies or sources, and the list is in the run log.')
@@ -529,7 +556,26 @@ const edition = {
   gaps: readerGaps.concat(decision.gaps || []),
   corrections: decision.corrections || [],
 }
+// checksum:begin
+// FNV-1a (32-bit) over a canonical walk: keys sorted, strings by code point, numbers to six decimals. The same as
+// scripts/jobslib.py payload_checksum, so apply_edition.py can tell whether the agent wrote this payload unchanged.
+function payloadChecksum(value) {
+  let h = 0x811c9dc5
+  const feed = text => { for (const ch of text) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0 } }
+  const walk = v => {
+    if (v === null || v === undefined) feed('z')
+    else if (typeof v === 'boolean') feed(v ? 'b1' : 'b0')
+    else if (typeof v === 'number') feed('n' + v.toFixed(6))
+    else if (typeof v === 'string') feed('s' + [...v].length + ':' + v)
+    else if (Array.isArray(v)) { feed('a' + v.length); v.forEach(walk) }
+    else { const keys = Object.keys(v).sort(); feed('o' + keys.length); keys.forEach(k => { feed('k' + k); walk(v[k]) }) }
+  }
+  walk(value)
+  return (h >>> 0).toString(16).padStart(8, '0')
+}
+// checksum:end
 const payload = { edition: edition, claims: claimPatch }
+payload.checksum = payloadChecksum({ edition: edition, claims: claimPatch })
 
 phase('Write')
 const written = await runAgent([
@@ -579,9 +625,15 @@ if (problems.length || written.exitCode !== 0) {
 
 // Ready only when the write passed and the review either found nothing or its fixes were applied and re-checked: an
 // unreviewed or unfixed edition is never ready (the 2026-10-06 baseline's fixer was blocked and the run said ready).
-const ready = written.exitCode === 0 && !!review && (problems.length === 0 || (!!fixed && !!fixed.ok))
+const needsFix = problems.length > 0 || written.exitCode !== 0
+const ready = written.exitCode !== 2 && !!review && (needsFix ? (!!fixed && !!fixed.ok) : true)
+const reason = ready ? '' : !review ? 'the review stage failed, so no reviewer saw this edition'
+  : written.exitCode === 2 ? 'apply_edition.py refused the payload, so nothing was written'
+  : !fixed ? 'the fix stage failed, so the review\'s problems were not applied'
+  : 'the fixer could not get check_plugin.py to CHECK OK'
 return {
   ready: ready,
+  reason: reason,
   date: DATE,
   baseline: BASELINE,
   headline: edition.headline,

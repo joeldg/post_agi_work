@@ -14,7 +14,7 @@ sys.path.insert(0, str(HERE.parent))
 
 import check_plugin  # noqa: E402
 import confirm  # noqa: E402
-from scripts.tests.test_check_plugin import BASE, make_repo  # noqa: E402
+from scripts.tests.test_check_plugin import BASE, apply_ops, git, make_repo  # noqa: E402
 
 PENDING_WHY = "Two quarters of official data."
 
@@ -57,6 +57,12 @@ class Apply(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "J13 is not a claim"):
             confirm.apply(claims(), "J13", "established", False, "2026-10-20")
 
+    def test_claim_missing_from_the_document_is_refused(self):
+        doc = claims()
+        doc["claims"] = [c for c in doc["claims"] if c["id"] != "J4"]
+        with self.assertRaisesRegex(ValueError, "J4 is not in claims.json"):
+            confirm.apply(doc, "J4", "established", False, "2026-10-20")
+
     def test_input_is_not_mutated(self):
         doc = claims()
         confirm.apply(doc, "J4", "established", False, "2026-10-20")
@@ -75,6 +81,45 @@ class Main(unittest.TestCase):
             self.assertEqual(status.stdout, "")
             log = subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%s"], capture_output=True, text=True)
             self.assertEqual(log.stdout.strip(), "Owner confirms J4: established")
+        finally:
+            shutil.rmtree(root, ignore_errors=True)
+
+    def run_main(self, root, *argv):
+        with contextlib.redirect_stderr(io.StringIO()) as err, contextlib.redirect_stdout(io.StringIO()):
+            code = confirm.main(list(argv) + ["--root", str(root), "--today", "2026-10-20"])
+        return code, err.getvalue()
+
+    def test_refuses_when_claims_json_has_uncommitted_changes(self):
+        # The 2026-10-06 review's I1: a failed run's leftover J5 move would have ridden along in the owner's commit.
+        root = make_repo()
+        try:
+            apply_ops(root, [{"file": "claims.json", "set": ["claims", 5, "why"], "value": "Leftover from a failed run."}])
+            code, err = self.run_main(root, "J4", "--to", "established")
+            self.assertEqual(code, 2)
+            self.assertIn("claims.json has uncommitted changes", err)
+        finally:
+            shutil.rmtree(root, ignore_errors=True)
+
+    def test_refuses_when_anything_is_staged(self):
+        root = make_repo()
+        try:
+            (root / "notes.txt").write_text("x", encoding="utf-8")
+            git(root, "add", "notes.txt")
+            code, err = self.run_main(root, "J4", "--to", "established")
+            self.assertEqual(code, 2)
+            self.assertIn("staged changes", err)
+        finally:
+            shutil.rmtree(root, ignore_errors=True)
+
+    def test_commit_holds_only_claims_json(self):
+        root = make_repo()
+        try:
+            (root / "untracked.txt").write_text("x", encoding="utf-8")
+            code, _ = self.run_main(root, "J4", "--to", "established")
+            self.assertEqual(code, 0)
+            files = subprocess.run(["git", "-C", str(root), "show", "--name-only", "--format=", "HEAD"],
+                                   capture_output=True, text=True).stdout.split()
+            self.assertEqual(files, ["claims.json"])
         finally:
             shutil.rmtree(root, ignore_errors=True)
 

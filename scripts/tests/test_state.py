@@ -10,7 +10,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 import state  # noqa: E402
-from scripts.tests.test_check_plugin import apply_ops, make_repo  # noqa: E402
+from scripts.tests.test_check_plugin import apply_ops, git, make_repo  # noqa: E402
 
 
 class State(unittest.TestCase):
@@ -41,10 +41,43 @@ class State(unittest.TestCase):
         row = {"date": "2026-10-18", "from": "supported", "to": "established", "why": "Owner agreed.",
                "evidence": ["2026-10-15#e2"], "by": "owner"}
         apply_ops(self.root, [{"file": "claims.json", "append": ["claims", 4, "history"], "value": row},
-                              {"file": "claims.json", "set": ["claims", 4, "status"], "value": "established"}])
+                              {"file": "claims.json", "set": ["claims", 4, "status"], "value": "established"},
+                              {"file": "claims.json", "set": ["claims", 4, "pending"], "value": None}])
+        git(self.root, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "Owner confirms J4")  # as confirm.py does
         s = state.state(self.root, "2026-10-22")
         self.assertEqual(s["ownerMoves"], [{"id": "J4", "date": "2026-10-18", "from": "supported",
                                             "to": "established", "why": "Owner agreed."}])
+
+    def test_same_day_owner_move_is_reported(self):
+        # The 2026-10-06 review's C1: the owner confirmed J4 on the baseline's own date, and a date-only rule lost it.
+        row = {"date": "2026-10-15", "from": "supported", "to": "established", "why": "Owner agreed.",
+               "evidence": ["2026-10-15#e2"], "by": "owner"}
+        apply_ops(self.root, [{"file": "claims.json", "append": ["claims", 4, "history"], "value": row},
+                              {"file": "claims.json", "set": ["claims", 4, "status"], "value": "established"},
+                              {"file": "claims.json", "set": ["claims", 4, "pending"], "value": None}])
+        git(self.root, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "Owner confirms J4: established")
+        s = state.state(self.root, "2026-10-22")
+        self.assertEqual(s["ownerMoves"], [{"id": "J4", "date": "2026-10-15", "from": "supported",
+                                            "to": "established", "why": "Owner agreed."}])
+
+    def test_owner_move_already_in_an_edition_is_not_repeated(self):
+        row = {"date": "2026-10-15", "from": "supported", "to": "established", "why": "Owner agreed.",
+               "evidence": [], "by": "owner"}
+        apply_ops(self.root, [{"file": "claims.json", "append": ["claims", 4, "history"], "value": row},
+                              {"file": "claims.json", "set": ["claims", 4, "status"], "value": "established"},
+                              {"file": "claims.json", "set": ["claims", 4, "pending"], "value": None}])
+        git(self.root, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "Owner confirms J4: established")
+        ed = json.loads((self.root / "editions/2026-10-15.json").read_text(encoding="utf-8"))
+        ed["date"] = "2026-10-22"
+        (self.root / "editions/2026-10-22.json").write_text(json.dumps(ed), encoding="utf-8")
+        git(self.root, "add", "editions/2026-10-22.json")
+        git(self.root, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "Jobs edition 2026-10-22")
+        self.assertEqual(state.state(self.root, "2026-10-29")["ownerMoves"], [])
+
+    def test_current_status_comes_from_the_committed_claims(self):
+        # A failed attempt's uncommitted move must not become the next attempt's "current" status (I2).
+        apply_ops(self.root, [{"file": "claims.json", "set": ["claims", 5, "status"], "value": "emerging"}])
+        self.assertEqual(state.state(self.root, "2026-10-22")["claims"][5]["status"], "no-clear-sign")
 
     def test_releases_summary(self):
         (self.root / "series").mkdir()

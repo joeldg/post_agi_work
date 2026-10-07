@@ -36,7 +36,8 @@ def _series_ok(sid) -> bool:
     return prefix in SERIES_PREFIXES and bool(rest.strip())
 
 
-def check_claims(doc: dict, has_editions: bool = False) -> list[str]:
+def check_claims(doc: dict, has_editions: bool = False, frozen_rows: dict | None = None) -> list[str]:
+    """frozen_rows: {claim id: number of history rows committed}; content rules skip those rows (I8)."""
     out = []
     p = lambda where, rule: out.append(f"claims.json: {where}: {rule}")  # noqa: E731
     if not isinstance(doc, dict):
@@ -80,16 +81,21 @@ def check_claims(doc: dict, has_editions: bool = False) -> list[str]:
         pending = c.get("pending")
         if pending is not None and (not isinstance(pending, dict) or pending.get("to") not in EXTREMES):
             p(cid, "pending.to must be established or contradicted")
+        elif pending is not None and pending.get("to") == status:
+            p(cid, "pending.to must differ from status")
         hist = c.get("history") or []
         if not hist and (c.get("since") is not None or has_editions):
             p(cid, "history may be empty only when since is null and no edition exists")
         for n, row in enumerate(hist, 1):
-            if WORKING_NOTES.search(str(row.get("why") or "")):
+            if n > (frozen_rows or {}).get(cid, 0) and WORKING_NOTES.search(str(row.get("why") or "")):
                 p(cid, f"history row {n}: why reads like working notes")
             if n > 1 and row.get("from") != hist[n - 2].get("to"):
                 p(cid, f"history row {n}: from must equal the previous row's to")
         if hist and hist[-1].get("to") != status:
             p(cid, "last history row's to must equal status")
+        run_dates = [r.get("date") for r in hist if r.get("by") == "run"]
+        for d in sorted({d for d in run_dates if run_dates.count(d) > 1}):
+            p(cid, f"more than one run row dated {d}")
     return out
 
 
@@ -103,7 +109,9 @@ def _edition_ids(doc) -> tuple[set, list]:
     return seen, twice
 
 
-def check_edition(doc: dict, rel: str) -> list[str]:
+def check_edition(doc: dict, rel: str, content: bool = True) -> list[str]:
+    """content=False for an edition committed and unchanged: it is frozen, so rules about wording, links and the
+    denylist, which may tighten later, apply only to new or changed editions (the 2026-10-06 review's I8)."""
     out = []
     p = lambda where, rule: out.append(f"{rel}: {where}: {rule}")  # noqa: E731
     if not isinstance(doc, dict):
@@ -138,7 +146,7 @@ def check_edition(doc: dict, rel: str) -> list[str]:
             if eid not in ids:
                 p(where, f"evidence id {eid} is not defined")
 
-    for mv in (doc.get("moves") or []) + (doc.get("pendingOwner") or []):
+    for mv in (doc.get("moves") or []) + (doc.get("pendingOwner") or []) if content else []:
         if WORKING_NOTES.search(str(mv.get("why") or "")):
             p(f"move {mv.get('id')}", "why reads like working notes")
     for mv in doc.get("moves") or []:
@@ -146,6 +154,8 @@ def check_edition(doc: dict, rel: str) -> list[str]:
         a, b = mv.get("from"), mv.get("to")
         if a not in STATUS or b not in STATUS:
             p(where, "move from and to must be on the scale")
+        elif a == b:
+            p(where, "a move must change the status")
         elif mv.get("by") != "owner":
             if steps(a, b) > 1:
                 p(where, f"move of {steps(a, b)} steps needs by: owner")
@@ -163,13 +173,13 @@ def check_edition(doc: dict, rel: str) -> list[str]:
         text = str(e.get("text") or "")
         if not text.strip():
             p(where, "evidence text is required")
-        elif INSTRUCTION.match(text):
+        elif content and INSTRUCTION.match(text):
             p(where, "evidence text reads like an editing instruction")
-        for d in sorted(set(DRAFT_ID.findall(text))):
+        for d in sorted(set(DRAFT_ID.findall(text))) if content else []:
             p(where, f"evidence text refers to a draft item id ({d})")
         if words(e.get("ratingQual")) > QUAL_MAX_WORDS:
             p(where, f"ratingQual is at most {QUAL_MAX_WORDS} words")
-        for u in [e.get("url")] + list(e.get("otherUrls") or []):
+        for u in [e.get("url")] + list(e.get("otherUrls") or []) if content else []:
             prob = url_problem(u)
             if prob:
                 p(where, prob)
@@ -194,7 +204,7 @@ def check_edition(doc: dict, rel: str) -> list[str]:
         for key in ("date", "item", "was", "now"):
             if not str(c.get(key) or "").strip():
                 p("corrections", f"correction {key} is required")
-        prob = url_problem(c.get("url"))
+        prob = url_problem(c.get("url")) if content else None
         if prob:
             p("corrections", prob)
     return out
@@ -202,6 +212,38 @@ def check_edition(doc: dict, rel: str) -> list[str]:
 
 FROZEN_CLAIM_FIELDS = ("label", "wording", "marks", "indicators")
 FROZEN_TOP_FIELDS = ("lists", "defaultMarks")
+
+
+def check_fresh(doc: dict, rel: str, claims: dict) -> list[str]:
+    """An edition not yet committed must agree with claims.json (the 2026-10-06 review's I2): the strip's statuses and
+    pending moves, pendingOwner, and a history row for every move. A committed edition is frozen and claims.json may
+    move on after it (the owner's confirmations), so these rules apply only before the commit."""
+    out = []
+    p = lambda where, rule: out.append(f"{rel}: {where}: {rule}")  # noqa: E731
+    by_id = {c.get("id"): c for c in claims.get("claims") or [] if isinstance(c, dict)}
+    for s in doc.get("strip") or []:
+        c = by_id.get(s.get("id"))
+        if not c:
+            continue
+        if s.get("status") != c.get("status"):
+            p(f"strip {s['id']}", f"status {s.get('status')} does not match claims.json ({c.get('status')})")
+        want = (c.get("pending") or {}).get("to")
+        if (s.get("pending") or {}).get("to") != want:
+            p(f"strip {s['id']}", f"pending does not match claims.json ({want})")
+    if sorted(x.get("id") for x in doc.get("pendingOwner") or []) != sorted(s.get("id") for s in doc.get("strip") or [] if s.get("pending")):
+        p("pendingOwner", "pendingOwner must list exactly the strip's pending claims")
+    for mv in doc.get("moves") or []:
+        hist = (by_id.get(mv.get("id")) or {}).get("history") or []
+        if mv.get("by") == "owner":
+            ok = any(r.get("by") == "owner" and r.get("from") == mv.get("from") and r.get("to") == mv.get("to") for r in hist)
+            what = f"no owner history row from {mv.get('from')} to {mv.get('to')}"
+        else:
+            ok = any(r.get("by") == "run" and r.get("date") == doc.get("date") and r.get("from") == mv.get("from")
+                     and r.get("to") == mv.get("to") for r in hist)
+            what = f"no history row dated {doc.get('date')} from {mv.get('from')} to {mv.get('to')}"
+        if not ok:
+            p(f"move {mv.get('id')}", what)
+    return out
 
 
 def check_git(root: Path, rev: str, claims: dict | None) -> list[str]:
@@ -259,8 +301,16 @@ def check(root: Path, rev: str = "HEAD") -> list[str]:
     except (OSError, ValueError) as e:
         out.append(f"claims.json: top: does not parse ({e})")
     editions = sorted((root / "editions").glob("*.json"))
+    have_git = git_ok(root, rev)
+    frozen_rows = {}
+    head_claims = git_show(root, rev, "claims.json") if have_git else None
+    if head_claims is not None:
+        try:
+            frozen_rows = {c.get("id"): len(c.get("history") or []) for c in loads_json(head_claims).get("claims") or []}
+        except ValueError:
+            frozen_rows = {}
     if claims is not None:
-        out += check_claims(claims, has_editions=bool(editions))
+        out += check_claims(claims, has_editions=bool(editions), frozen_rows=frozen_rows)
     for path in editions:
         rel = f"editions/{path.name}"
         try:
@@ -268,7 +318,12 @@ def check(root: Path, rev: str = "HEAD") -> list[str]:
         except (OSError, ValueError) as e:
             out.append(f"{rel}: top: does not parse ({e})")
             continue
-        out += check_edition(doc, rel)
+        committed = git_show(root, rev, rel) if have_git else None
+        unchanged = committed is not None and committed == path.read_text(encoding="utf-8")
+        out += check_edition(doc, rel, content=not unchanged)
+        fresh = have_git and committed is None
+        if fresh and claims is not None:
+            out += check_fresh(doc, rel, claims)
     if git_ok(root, rev):
         out += check_git(root, rev, claims)
     return sorted(out)

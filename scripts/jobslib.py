@@ -108,3 +108,41 @@ def git_ls(root: Path, rev: str, folder: str) -> list:
     r = subprocess.run(["git", "-C", str(root), "ls-tree", "-r", "--name-only", rev, "--", folder],
                        capture_output=True, text=True)
     return [line for line in r.stdout.splitlines() if line] if r.returncode == 0 else []
+
+
+def payload_checksum(value) -> str:
+    """FNV-1a (32-bit) over a canonical walk of a JSON value: keys sorted, strings by code point, numbers to six
+    decimals. The workflow computes the same in JavaScript (jobs-weekly.js, between "checksum:begin" and
+    "checksum:end"), so apply_edition.py can tell whether the payload an agent wrote to disk is the one the workflow
+    built (the 2026-10-06 review's I9)."""
+    h = 0x811C9DC5
+
+    def feed(text: str):
+        nonlocal h
+        for ch in text:
+            h ^= ord(ch)
+            h = (h * 0x01000193) & 0xFFFFFFFF
+
+    def walk(v):
+        if v is None:
+            feed("z")
+        elif isinstance(v, bool):
+            feed("b1" if v else "b0")
+        elif isinstance(v, (int, float)):
+            feed("n" + ("%.6f" % v))
+        elif isinstance(v, str):
+            feed("s" + str(len(v)) + ":" + v)
+        elif isinstance(v, list):
+            feed("a" + str(len(v)))
+            for x in v:
+                walk(x)
+        elif isinstance(v, dict):
+            feed("o" + str(len(v)))
+            for k in sorted(v):
+                feed("k" + k)
+                walk(v[k])
+        else:
+            raise TypeError(f"not a JSON value: {type(v).__name__}")
+
+    walk(value)
+    return "%08x" % h
