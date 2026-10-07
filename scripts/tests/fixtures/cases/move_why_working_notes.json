@@ -1,0 +1,15 @@
+{
+ "rule": "move why working notes",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "moves",
+    0,
+    "why"
+   ],
+   "value": "I checked the series in .claude/work/x and it holds."
+  }
+ ],
+ "expect": "why reads like working notes"
+}

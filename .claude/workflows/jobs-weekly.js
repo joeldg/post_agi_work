@@ -192,9 +192,11 @@ const MOVE_CHECK = {
   type: 'object',
   properties: {
     id: S, holds: { type: 'boolean' }, status: { type: 'string', enum: STATUS },
-    pendingHolds: { type: 'boolean' }, why: S,
+    pendingHolds: { type: 'boolean' },
+    why: { type: 'string', description: 'Your working notes for the run log. Never published.' },
+    publishedWhy: { type: 'string', description: 'The published reason for the status you support: two to five sentences in the first person plural ("we"), quoting the claim\'s mark text in quotation marks for that status and for the next mark up that is not met, with the numbers that decide it. No "I", no stage names, no field names, no file paths.' },
   },
-  required: ['id', 'holds', 'status', 'pendingHolds', 'why'],
+  required: ['id', 'holds', 'status', 'pendingHolds', 'why', 'publishedWhy'],
 }
 
 const RUN_OUTPUT = { type: 'object', properties: { exitCode: { type: 'number' }, output: S }, required: ['exitCode', 'output'] }
@@ -386,7 +388,7 @@ const decision = await runAgent([
   STATE_NOTE,
   Object.keys(RAN).length < 13 ? 'REHEARSAL: no lens ran for ' + ['J0', 'J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10', 'J11', 'J12'].filter(c => !RAN[c]).join(', ') + '; give those claims their current status (No clear sign at a baseline) with the why "No lens ran for this claim in this rehearsal."' : '',
   '',
-  'For each claim return: status (' + (BASELINE ? 'its starting status' : 'its current status, or one step from it') + '), pendingTo ("established" or "contradicted" when the evidence meets an extreme the owner must confirm, else "none"), mark (quote the mark text from claims.json you applied), why (two to four plain sentences: what the evidence shows, which indicators agree, the confounders and why they do or do not explain it), and evidence (the item ids, e.g. ["e3", "e7"]; may be empty only for No clear sign).',
+  'For each claim return: status (' + (BASELINE ? 'its starting status' : 'its current status, or one step from it') + '), pendingTo ("established" or "contradicted" when the evidence meets an extreme the owner must confirm, else "none"), mark (quote the mark text from claims.json you applied), why (three to five plain sentences in the "we" voice: quote, in quotation marks, the mark for the status you set and the mark for the next status up that is not met; then what the evidence shows, which indicators agree, and the confounders and why they do or do not explain it), and evidence (the item ids, e.g. ["e3", "e7"]; may be empty only for No clear sign).',
   'Also return: headline (at most 90 characters, plain, the week\'s most important finding, keeping the sources\' hedging; ' + (BASELINE ? 'for the baseline, where the claims start' : 'what moved or, in a quiet week, the most notable item') + '), dek (at most 60 words), top (the 3-8 item ids a reader should see first, the capital-positioning evidence among them), nullCase ({text, evidence} with the week\'s strongest evidence for J0 that it is a normal transition, or {none: reason} only if there truly is none), corrections (any earlier edition item that turned out wrong: {date, page: "jobs.html", item, was, now, url}), gaps (reader-facing: what you could not assess and why, in plain sentences) and notes (for the owner and later stages; never published).',
   '',
   'VERIFIED ITEMS (JSON):',
@@ -424,6 +426,7 @@ function moveCheckPrompt(p) {
     GROUND, '', EVIDENCE, '', MARKS, '',
     'You are a REFUTER of one proposed status. Read ' + p.id + ' in claims.json (wording, marks, indicators, history) and open the evidence below yourself. Try to break the proposal: is the mark it quotes actually met by these items (agreement of different kinds of indicator, sustained across releases, beyond the pre-2022 range or the comparison group, confounders examined)? Default to holds=false when in doubt.',
     'PROPOSAL: ' + JSON.stringify({ claim: p.id, from: BASELINE ? '(baseline)' : p.current, to: p.status, pendingTo: p.pendingTo, mark: p.mark, why: p.why }),
+    'Return "why" (your working notes; never published) and "publishedWhy" (the reason readers see, in the "we" voice, quoting the mark text; it replaces the proposal\'s reason when holds is false).',
     BASELINE ? 'Return holds (does the evidence support this starting status?), status (the HIGHEST status on the scale the evidence does support, between No clear sign and the proposal, or Contradicted only if proposed and supported; never Established), pendingHolds (does the evidence meet the proposed pending extreme? false if none was proposed), why.' : 'Return holds (is the move to "' + p.status + '" supported?), status (the status the evidence supports: the proposal if it holds, else the current status ' + p.current + '), pendingHolds (does the evidence meet the proposed pending extreme? false if none was proposed), why.',
     '',
     'EVIDENCE (JSON):',
@@ -431,6 +434,9 @@ function moveCheckPrompt(p) {
   ].join('\n')
 }
 
+// A stage's working notes never reach a published reason (the 2026-10-06 baseline published three); they go to notes.
+const WORKING = /\bI (opened|checked|downloaded|ran|read|found|confirmed|calculated)\b|The refuter found|pendingHolds|\.claude\/work/
+const refuterNotes = []
 const toCheck = proposals.filter(p => (BASELINE ? p.status !== 'no-clear-sign' : p.status !== p.current) || p.pendingTo)
 log(toCheck.length + ' proposed status(es) go to a refuter')
 const checks = await parallel(toCheck.map(p => () => runAgent(moveCheckPrompt(p), { label: 'refute move: ' + p.id, phase: 'Decide', schema: MOVE_CHECK })))
@@ -445,11 +451,13 @@ for (const p of proposals) {
     p.pendingTo = null
     continue
   }
+  refuterNotes.push(p.id + ': ' + c.why)
   if (!c.holds) {
     let s = STATUS.indexOf(c.status) >= 0 ? c.status : (BASELINE ? 'no-clear-sign' : p.current)
     if (EXTREMES.indexOf(s) >= 0) s = BASELINE ? 'no-clear-sign' : p.current
     if (!BASELINE && s !== p.current && s !== p.status) s = p.current
-    p.why += ' The refuter found: ' + c.why
+    const pw = String(c.publishedWhy || '').trim()
+    p.why = pw && !WORKING.test(pw) ? pw : 'The evidence did not support the proposed status under its mark, so we hold ' + s + '.'
     p.status = s
   }
   if (p.pendingTo && !c.pendingHolds) p.pendingTo = null
@@ -484,6 +492,24 @@ for (const p of proposals) {
 }
 const pendingOf = {}
 pendingOwner.forEach(x => { pendingOf[x.id] = x.to })
+const decided = {}
+;(decision.claims || []).forEach(c => { decided[c.id] = c.status + '|' + (c.pendingTo || 'none') })
+const changed = proposals.filter(p => decided[p.id] !== p.status + '|' + (p.pendingTo || 'none'))
+let headline = decision.headline
+let dek = decision.dek
+if (changed.length) {
+  log('The refuters changed ' + changed.map(p => p.id).join(', ') + ': rewriting the headline and dek to match')
+  const copy = await runAgent([
+    GROUND, '', EVIDENCE, '',
+    'Write the headline and dek for the Jobs ' + (BASELINE ? 'baseline' : 'edition') + ' of ' + DATE + ' so they match the FINAL statuses below (the refuters changed some after the first draft). Headline: at most 90 characters, plain, keeping the sources\' hedging. Dek: at most 60 words. Name a status only as it stands in the list; a pending extreme is "proposed for the owner", never reached. No web, no files, no tools.',
+    'FINAL STATUSES (JSON): ' + JSON.stringify(proposals.map(p => ({ id: p.id, label: p.label, status: p.status, pendingTo: p.pendingTo, why: p.why }))),
+    'FIRST DRAFT, to correct: ' + JSON.stringify({ headline: decision.headline, dek: decision.dek }),
+  ].join('\n'), { label: 'headline', phase: 'Decide', schema: { type: 'object', properties: { headline: S, dek: S }, required: ['headline', 'dek'] } })
+  if (copy && copy.headline) { headline = copy.headline; dek = copy.dek || dek }
+}
+const readerGaps = gaps.slice()
+if (blocked.length) readerGaps.push(blocked.length + ' sources could not be opened (paywalls, or sites that block automated access); items rest on other copies or sources, and the list is in the run log.')
+if (BASELINE) readerGaps.push('In this baseline, items dated before 2026 are marked as background.')
 const nc = decision.nullCase || {}
 const nullCase = nc.none && !nc.text ? { none: nc.none } : { text: nc.text || 'No evidence for the null this week.', evidence: (nc.evidence || []).filter(e => itemIds[e]) }
 const edition = {
@@ -492,15 +518,15 @@ const edition = {
   claimsVersion: st.claimsVersion,
   baseline: BASELINE,
   window: { from: BASELINE ? null : dayAfter(st.prev.date), to: DATE },
-  headline: decision.headline,
-  dek: decision.dek,
+  headline: headline,
+  dek: dek,
   strip: proposals.map(p => ({ id: p.id, status: p.status, prev: BASELINE ? null : (PREV[p.id] || null), pending: pendingOf[p.id] ? { to: pendingOf[p.id] } : null })),
   moves: moves,
   pendingOwner: pendingOwner,
   evidence: items.map(i => ({ id: i.id, text: i.text, eventDate: i.eventDate, background: i.background, url: i.url, otherUrls: i.otherUrls, via: i.via, rating: i.rating, ratingQual: i.ratingQual, ratingNote: i.ratingNote, kind: i.kind, dataKind: i.dataKind, bears: i.bears, confounder: i.confounder, top: i.top })),
   nullCase: nullCase,
   releases: st.releases,
-  gaps: gaps.concat(blocked.map(b => 'blocked: ' + b)).concat(decision.gaps || []),
+  gaps: readerGaps.concat(decision.gaps || []),
   corrections: decision.corrections || [],
 }
 const payload = { edition: edition, claims: claimPatch }
@@ -551,7 +577,9 @@ if (problems.length || written.exitCode !== 0) {
   ].join('\n'), { label: 'fix', phase: 'Review', schema: FIXED })
 }
 
-const ready = fixed ? !!fixed.ok : written.exitCode === 0
+// Ready only when the write passed and the review either found nothing or its fixes were applied and re-checked: an
+// unreviewed or unfixed edition is never ready (the 2026-10-06 baseline's fixer was blocked and the run said ready).
+const ready = written.exitCode === 0 && !!review && (problems.length === 0 || (!!fixed && !!fixed.ok))
 return {
   ready: ready,
   date: DATE,
@@ -563,7 +591,8 @@ return {
   items: items.length,
   dropped: dropped.length,
   gaps: edition.gaps,
-  notes: (decision.notes || []).concat(textNotes),
+  notes: (decision.notes || []).concat(textNotes).concat(refuterNotes),
+  blocked: blocked,
   fallbacks: fallbacks,
   review: { problems: problems.length, must: problems.filter(p => p.severity === 'must').length, summary: review ? review.summary : 'review failed' },
   fix: fixed ? { ok: fixed.ok, applied: (fixed.applied || []).length, declined: fixed.declined || [] } : null,

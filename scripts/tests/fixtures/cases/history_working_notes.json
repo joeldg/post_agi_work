@@ -1,0 +1,17 @@
+{
+ "rule": "history working notes",
+ "ops": [
+  {
+   "file": "claims.json",
+   "set": [
+    "claims",
+    3,
+    "history",
+    1,
+    "why"
+   ],
+   "value": "Payroll research agrees. The refuter found: I opened the page and pendingHolds is false."
+  }
+ ],
+ "expect": "history row 2: why reads like working notes"
+}

@@ -22,6 +22,8 @@ EDITION_NAME = re.compile(r"^(\d{4}-\d{2}-\d{2})\.json$")
 # A verifier's or reviewer's note that leaked into an item's published text (the 2026-10-06 rehearsal found ten).
 INSTRUCTION = re.compile(r"^\s*(Rating:|Note:|Add |Replace |Optionally|Say |Change |Drop |Rewrite |Correct |Cite |Use the |Remove )")
 DRAFT_ID = re.compile(r"\bc\d{1,3}\b")
+# A stage's working notes pasted into a published reason (the 2026-10-06 baseline's review found three).
+WORKING_NOTES = re.compile(r"\bI (opened|checked|downloaded|ran|read|found|confirmed|calculated)\b|The refuter found|pendingHolds|\.claude/work")
 STATUS_RULE = "status must be one of " + ", ".join(STATUS)
 SERIES_RULE = "series id must start with " + ", ".join(p + ":" for p in SERIES_PREFIXES[:-1]) + \
               " or " + SERIES_PREFIXES[-1] + ":"
@@ -82,6 +84,8 @@ def check_claims(doc: dict, has_editions: bool = False) -> list[str]:
         if not hist and (c.get("since") is not None or has_editions):
             p(cid, "history may be empty only when since is null and no edition exists")
         for n, row in enumerate(hist, 1):
+            if WORKING_NOTES.search(str(row.get("why") or "")):
+                p(cid, f"history row {n}: why reads like working notes")
             if n > 1 and row.get("from") != hist[n - 2].get("to"):
                 p(cid, f"history row {n}: from must equal the previous row's to")
         if hist and hist[-1].get("to") != status:
@@ -134,6 +138,9 @@ def check_edition(doc: dict, rel: str) -> list[str]:
             if eid not in ids:
                 p(where, f"evidence id {eid} is not defined")
 
+    for mv in (doc.get("moves") or []) + (doc.get("pendingOwner") or []):
+        if WORKING_NOTES.search(str(mv.get("why") or "")):
+            p(f"move {mv.get('id')}", "why reads like working notes")
     for mv in doc.get("moves") or []:
         where = f"move {mv.get('id')}"
         a, b = mv.get("from"), mv.get("to")
