@@ -26,6 +26,9 @@ LENS_OF = {cid: lens for lens, ids in LENSES.items() for cid in ids}
 # The newsletter's aggregator denylist (scripts/check_data.py DENYLIST); the newsletter's import enforces its own copy.
 DENYLIST = ("shattered.io", "aitoolsreview.co.uk", "geotoolbox.ai", "aistop.watch", "aiweekly.co")
 SERIES_PREFIXES = ("fred", "bls", "stooq", "basket")
+# Machine endpoints are not sources a reader can open: cite the public page (fred.stlouisfed.org/series/<ID>,
+# data.bls.gov/timeseries/<ID>) instead.
+DATA_ENDPOINTS = ("fred.stlouisfed.org/graph/fredgraph", "api.bls.gov/", "api.stlouisfed.org/")
 HEADLINE_MAX = 90
 DEK_MAX_WORDS = 60
 QUAL_MAX_WORDS = 5
@@ -75,6 +78,9 @@ def url_problem(u) -> str | None:
     if parts.scheme not in ("http", "https") or not parts.netloc:
         return "url must be http(s)"
     host = (parts.hostname or "").lower()
+    where = host + parts.path
+    if any(where.startswith(ep) for ep in DATA_ENDPOINTS):
+        return "url must be the source's public page, not a data endpoint"
     for d in DENYLIST:
         if host == d or host.endswith("." + d):
             return f"url is on the denylist ({d})"

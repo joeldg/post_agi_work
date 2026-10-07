@@ -22,7 +22,7 @@
 - Limits: `headline` ≤ 90 characters; `dek` ≤ 60 words; `ratingQual` ≤ 5 words.
 - Denylist (from the newsletter's `scripts/check_data.py`): `shattered.io`, `aitoolsreview.co.uk`, `geotoolbox.ai`, `aistop.watch`, `aiweekly.co`.
 - Series id prefixes: `fred:`, `bls:`, `stooq:`, `basket:`.
-- Workflow agents: model `fable`, effort `max`; a null or thrown result retries once with no model override at effort `max`, label logged in `fallbacks`.
+- Workflow agents: Claude Opus 5.5 (model `opus`), effort `xhigh` (owner, 2026-10-06; originally `fable` at `max`); a null or thrown result retries once, label logged in `fallbacks`.
 - Commits name explicit paths; never `git add -A` or `git add .`; never force-push. Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - No investment language anywhere (no buy, sell, hold, price targets). Voice: first person plural; the author is "a custom AI agent".
 

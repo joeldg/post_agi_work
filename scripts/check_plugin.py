@@ -19,6 +19,9 @@ from jobslib import (CLAIM_IDS, DATA_KINDS, DEK_MAX_WORDS, EXTREMES, HEADLINE_MA
 
 ROOT = Path(__file__).resolve().parent.parent
 EDITION_NAME = re.compile(r"^(\d{4}-\d{2}-\d{2})\.json$")
+# A verifier's or reviewer's note that leaked into an item's published text (the 2026-10-06 rehearsal found ten).
+INSTRUCTION = re.compile(r"^\s*(Rating:|Note:|Add |Replace |Optionally|Say |Change |Drop |Rewrite |Correct |Cite |Use the |Remove )")
+DRAFT_ID = re.compile(r"\bc\d{1,3}\b")
 STATUS_RULE = "status must be one of " + ", ".join(STATUS)
 SERIES_RULE = "series id must start with " + ", ".join(p + ":" for p in SERIES_PREFIXES[:-1]) + \
               " or " + SERIES_PREFIXES[-1] + ":"
@@ -150,6 +153,13 @@ def check_edition(doc: dict, rel: str) -> list[str]:
         where = f"evidence {e.get('id')}"
         if e.get("rating") not in RATINGS:
             p(where, "rating must be one of the six ratings")
+        text = str(e.get("text") or "")
+        if not text.strip():
+            p(where, "evidence text is required")
+        elif INSTRUCTION.match(text):
+            p(where, "evidence text reads like an editing instruction")
+        for d in sorted(set(DRAFT_ID.findall(text))):
+            p(where, f"evidence text refers to a draft item id ({d})")
         if words(e.get("ratingQual")) > QUAL_MAX_WORDS:
             p(where, f"ratingQual is at most {QUAL_MAX_WORDS} words")
         for u in [e.get("url")] + list(e.get("otherUrls") or []):

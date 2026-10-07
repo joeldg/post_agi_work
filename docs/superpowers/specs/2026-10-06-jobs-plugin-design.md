@@ -177,7 +177,7 @@ Rules:
     }
   ],
   "nullCase": {"text": "...", "evidence": ["e9"]},
-  "releases": [{"series": "bls:JTS510000000000000HIR", "period": "2026-08", "released": "2026-10-14", "value": 0.0, "note": "..."}],
+  "releases": [{"series": "bls:JTS510000000000000HIR", "period": "2026-08", "released": null, "firstSeen": "2026-10-15", "value": 0.0, "note": "..."}],
   "gaps": [],
   "corrections": [{"date": "2026-10-15", "page": "jobs.html", "item": "...", "was": "...", "now": "...", "url": "https://..."}]
 }
@@ -193,7 +193,7 @@ Rules:
 - `kind` is one of `official-series`, `filing`, `company-statement`, `research`, `press`, `court`, `regulator`, `market-data`.
 - `bears` lists every claim the item speaks to, each `for` or `against`.
 - `nullCase` is always present: either `{"text", "evidence"}` with the week's strongest evidence for J0, or `{"none": "<reason>"}`.
-- `releases` lists the scheduled series that came out in the window, from `series/releases.json`.
+- `releases` lists the series with new observations in the window, from `series/releases.json`. `released` is the publisher's release date when known, else null; `firstSeen` is the date our fetch first saw the data (the rehearsal's review caught the fetch date labelled as a release date).
 - `corrections` use the newsletter's corrections fields (`date`, `page`, `item`, `was`, `now`, `url`); the import adds `emailed: null` and `section: "jobs"`.
 - A published edition (one committed and pushed) is frozen. A mistake is fixed by a correction in a later edition, never by editing the old one.
 
@@ -453,7 +453,7 @@ A local scheduled task like `daily-agi-assessment` and `weekly-agi-wrapup`, Thur
 
 ### 7.2 The workflow (`.claude/workflows/jobs-weekly.js`)
 
-Same patterns as the newsletter's workflows: args as an object or its JSON text; `agentMax()` runs every agent on Claude Fable 5.1 (model `fable`) at effort max and retries a declined call once on the default model at max, logging the label in `fallbacks`; scratch under `.claude/work/jobs-<DATE>/` only.
+Same patterns as the newsletter's workflows: args as an object or its JSON text; every agent runs on Claude Opus 5.5 (model `opus`) at effort `xhigh` (owner, 2026-10-06: Fable is not needed for Jobs); a call that returns null or throws is retried once, and its label is logged in `fallbacks`; scratch under `.claude/work/jobs-<DATE>/` only.
 
 **Args:** `date` (required), `baseline` (boolean, default false), `repo` (default `/Users/joeldg/Projects/post_agi_work`; a scratch copy for a rehearsal), `researchBy`, `writeBy` (Pacific HH:MM soft deadlines).
 

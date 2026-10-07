@@ -1,0 +1,15 @@
+{
+ "rule": "evidence text rating note",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "text"
+   ],
+   "value": "Rating: verified fact. Add the period."
+  }
+ ],
+ "expect": "evidence text reads like an editing instruction"
+}

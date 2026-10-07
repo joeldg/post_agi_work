@@ -1,0 +1,15 @@
+{
+ "rule": "url data endpoint fred",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "url"
+   ],
+   "value": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=OPHNFB"
+  }
+ ],
+ "expect": "url must be the source's public page, not a data endpoint"
+}

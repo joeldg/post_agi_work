@@ -1,0 +1,15 @@
+{
+ "rule": "evidence text instruction",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "text"
+   ],
+   "value": "Replace the figure with 2.1% and cite the paper."
+  }
+ ],
+ "expect": "evidence text reads like an editing instruction"
+}

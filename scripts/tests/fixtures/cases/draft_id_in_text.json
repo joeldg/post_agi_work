@@ -1,0 +1,15 @@
+{
+ "rule": "draft id in text",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    1,
+    "text"
+   ],
+   "value": "Payroll data agree with c12 on young workers."
+  }
+ ],
+ "expect": "evidence text refers to a draft item id (c12)"
+}

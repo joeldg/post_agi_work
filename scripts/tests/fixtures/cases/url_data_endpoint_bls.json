@@ -1,0 +1,17 @@
+{
+ "rule": "url data endpoint bls",
+ "ops": [
+  {
+   "file": "editions/2026-10-15.json",
+   "set": [
+    "evidence",
+    0,
+    "otherUrls"
+   ],
+   "value": [
+    "https://api.bls.gov/publicAPI/v1/timeseries/data/X"
+   ]
+  }
+ ],
+ "expect": "url must be the source's public page, not a data endpoint"
+}
