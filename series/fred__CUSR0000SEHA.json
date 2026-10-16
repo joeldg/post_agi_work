@@ -1,7 +1,7 @@
 {
  "id": "fred:CUSR0000SEHA",
  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CUSR0000SEHA",
- "fetched": "2026-10-06T19:19:59-07:00",
+ "fetched": "2026-10-15T20:46:39-07:00",
  "status": "ok",
  "error": null,
  "observations": [
@@ -560,6 +560,10 @@
   [
    "2026-08-01",
    449.321
+  ],
+  [
+   "2026-09-01",
+   450.429
   ]
  ]
 }

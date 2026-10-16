@@ -1,7 +1,7 @@
 {
  "id": "fred:FRBATLWGT12MMUMHWGOSCPM",
  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=FRBATLWGT12MMUMHWGOSCPM",
- "fetched": "2026-10-06T19:19:59-07:00",
+ "fetched": "2026-10-15T20:46:39-07:00",
  "status": "ok",
  "error": null,
  "observations": [
@@ -559,6 +559,10 @@
   ],
   [
    "2026-08-01",
+   3.9
+  ],
+  [
+   "2026-09-01",
    3.9
   ]
  ]
