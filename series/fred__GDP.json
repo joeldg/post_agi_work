@@ -1,7 +1,7 @@
 {
  "id": "fred:GDP",
  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=GDP",
- "fetched": "2026-10-15T20:46:39-07:00",
+ "fetched": "2026-10-29T19:16:04-07:00",
  "status": "ok",
  "error": null,
  "observations": [
@@ -188,6 +188,10 @@
   [
    "2026-04-01",
    32563.03
+  ],
+  [
+   "2026-07-01",
+   33010.036
   ]
  ]
 }

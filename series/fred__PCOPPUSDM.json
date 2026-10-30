@@ -1,7 +1,7 @@
 {
  "id": "fred:PCOPPUSDM",
  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCOPPUSDM",
- "fetched": "2026-10-15T20:46:39-07:00",
+ "fetched": "2026-10-29T19:16:04-07:00",
  "status": "ok",
  "error": null,
  "observations": [
@@ -560,6 +560,14 @@
   [
    "2026-07-01",
    13542.82086956522
+  ],
+  [
+   "2026-08-01",
+   14331.26476190476
+  ],
+  [
+   "2026-09-01",
+   14473.05590909091
   ]
  ]
 }

@@ -1,7 +1,7 @@
 {
  "id": "bls:JTS510000000000000HIR",
  "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/JTS510000000000000HIR",
- "fetched": "2026-10-15T20:46:39-07:00",
+ "fetched": "2026-10-29T19:16:04-07:00",
  "status": "ok",
  "error": null,
  "observations": [

@@ -1,7 +1,7 @@
 {
  "id": "fred:DHLCRC1Q027SBEA",
  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DHLCRC1Q027SBEA",
- "fetched": "2026-10-15T20:46:39-07:00",
+ "fetched": "2026-10-29T19:16:04-07:00",
  "status": "ok",
  "error": null,
  "observations": [
@@ -188,6 +188,10 @@
   [
    "2026-04-01",
    3790.292
+  ],
+  [
+   "2026-07-01",
+   3858.671
   ]
  ]
 }
